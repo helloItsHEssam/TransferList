@@ -7,7 +7,7 @@
 
 import Combine
 
-extension AnyPublisher {
+extension AnyPublisher where Failure == PersonBankAccountError {
     struct Subscriber {
         fileprivate let send: (Output) -> Void
         fileprivate let complete: (Subscribers.Completion<Failure>) -> Void
@@ -35,7 +35,7 @@ extension AnyPublisher {
     }
 }
 
-extension AnyPublisher {
+extension AnyPublisher where Failure == PersonBankAccountError {
     init(taskPriority: TaskPriority? = nil, asyncFunc: @escaping () async throws -> Output) {
         self.init { subscriber in
             let task = Task(priority: taskPriority) {
@@ -43,7 +43,8 @@ extension AnyPublisher {
                     subscriber.send(try await asyncFunc())
                     subscriber.send(completion: .finished)
                 } catch {
-                    subscriber.send(completion: .failure(error as! Failure))
+                    let personError = error as? PersonBankAccountError ?? .unexpectedError
+                    subscriber.send(completion: .failure(personError))
                 }
             }
             return AnyCancellable {

@@ -13,6 +13,7 @@ public enum PersonBankAccountError: Error {
     case cannotRemovePersonAccountFromFavorites
     case cannotFetchPersonAccounts
     case cannotFetchFavoritePersonAccounts
+    case unexpectedError
     
     var errorDescription: String? {
         switch self {
@@ -27,6 +28,8 @@ public enum PersonBankAccountError: Error {
             
         case .cannotFetchFavoritePersonAccounts:
             return "Failed to fetch favorite person accounts"
+            
+        case .unexpectedError: return "Unexpected error"
         }
     }
 }
