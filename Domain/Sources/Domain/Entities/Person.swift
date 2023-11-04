@@ -10,12 +10,12 @@ import Foundation
 public struct Person {
     
     public var name: String?
-    public var emial: String?
+    public var email: String?
     public var avatar: String?
     
-    public init(name: String?, emial: String?, avatar: String?) {
+    public init(name: String?, email: String?, avatar: String?) {
         self.name = name
-        self.emial = emial
+        self.email = email
         self.avatar = avatar
     }
 }
