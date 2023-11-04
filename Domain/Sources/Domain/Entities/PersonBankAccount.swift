@@ -17,4 +17,23 @@ public struct PersonBankAccount: Identifiable {
     public var cardTransferCount: CardTransferCount?
     public var note: String?
     public var lastDateTransfer: Date?
+    public private(set) var isFavorite: Bool = false
+    var indexAtList: Int = 0
+    
+    public init(person: Person?, card: Card?, cardTransferCount: CardTransferCount?,
+         note: String?, lastDateTransfer: Date?) {
+        self.person = person
+        self.card = card
+        self.cardTransferCount = cardTransferCount
+        self.note = note
+        self.lastDateTransfer = lastDateTransfer
+    }
+    
+    public mutating func update(favoriteStatus isFavorite: Bool) {
+        self.isFavorite = isFavorite
+    }
+    
+    mutating func update(indexAtList index: Int) {
+        self.indexAtList = index
+    }
 }
