@@ -24,6 +24,7 @@
 		DEBE4ACB2AF6C3B200A58501 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DEBE4ACE2AF6C3B200A58501 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DEBE4AD02AF6C3B200A58501 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DEBE4AD62AF6C8F600A58501 /* Domain */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Domain; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +41,7 @@
 		DEBE4AB62AF6C3B000A58501 = {
 			isa = PBXGroup;
 			children = (
+				DEBE4AD62AF6C8F600A58501 /* Domain */,
 				DEBE4AC12AF6C3B000A58501 /* TransferList */,
 				DEBE4AC02AF6C3B000A58501 /* Products */,
 			);
