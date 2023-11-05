@@ -144,4 +144,44 @@ final class PersonBankAccountRepositoryTests: XCTestCase {
             XCTAssertEqual(error as? LocalError, .cannotFetchFavorites)
         }
     }
+    
+    func testSuccessUpdateFavoriteStatus() async {
+        
+        // given
+        let local = MockLocal()
+        repository = PersonBankAccountRepositoryImpl(api: MockApi(),
+                                                     local: local)
+        
+        // when
+        do {
+            let _ = try await repository.savePersonAccountToFavorites(local.createAccount())
+            let account = await repository.updatefavoriteStatusBasedOnFavorites(local.createAccount())
+            
+            XCTAssertEqual(account.isFavorite, true)
+            
+        } catch {
+            // then
+            XCTAssertNil(error)
+        }
+    }
+    
+    func testDoesNotUpdateFavoriteStatus() async {
+
+        // given
+        let local = MockDoesNotExistInFavoriteLocal()
+        repository = PersonBankAccountRepositoryImpl(api: MockApi(),
+                                                     local: local)
+        
+        // when
+        do {
+            let _ = try await repository.savePersonAccountToFavorites(local.createAccount())
+            let account = await repository.updatefavoriteStatusBasedOnFavorites(local.createAccount())
+            
+            XCTAssertEqual(account.isFavorite, false)
+            
+        } catch {
+            // then
+            XCTAssertNil(error)
+        }
+    }
 }

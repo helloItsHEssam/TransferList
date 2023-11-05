@@ -40,7 +40,7 @@ public class PersonBankAccountRepositoryImpl: PersonBankAccountRepository {
         try await local.removePersonAccountFromFavorites(personBankAccount)
     }
     
-    public func updatefavoriteStatusForPersonAccount(_ personBankAccount: Domain.PersonBankAccount) async -> Domain.PersonBankAccount {
-        fatalError()
+    public func updatefavoriteStatusBasedOnFavorites(_ personBankAccount: PersonBankAccount) async -> PersonBankAccount {
+        await local.updatefavoriteStatusBasedOnFavorites(personBankAccount)
     }
 }
