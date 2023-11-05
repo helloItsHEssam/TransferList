@@ -54,25 +54,32 @@ fileprivate extension Raleway {
 
     private func semiBoldFontSize(basedOnTextStyle textStyle: UIFont.TextStyle) -> CGFloat {
         switch textStyle {
-        case .headline: return 22
-        case .subheadline: return 18
-        default: return 14
+        case .title3: return 20
+        case .body, .headline: return 17
+        case .callout: return 16
+        case .subheadline: return 15
+        case .footnote: return 13
+        case .caption2: return 11
+        default: return 9
         }
     }
     
     private func ExtraBoldFontSize(basedOnTextStyle textStyle: UIFont.TextStyle) -> CGFloat {
         switch textStyle {
-        case .headline: return 24
-        case .subheadline: return 20
-        default: return 16
+        case .largeTitle: return 34
+        case .title1: return 28
+        case .subheadline: return 15
+        default: return 22
         }
     }
     
     private func regularFontSize(basedOnTextStyle textStyle: UIFont.TextStyle) -> CGFloat {
         switch textStyle {
-        case .title2: return 16
-        case .title3: return 12
-        default: return 10
+        case .body, .headline: return 17
+        case .callout: return 16
+        case .subheadline: return 15
+        case .caption2: return 13
+        default: return 9
         }
     }
 }
