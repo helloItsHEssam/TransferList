@@ -98,6 +98,19 @@ class ResponseMockURLProtocol: URLProtocol {
                                        httpResponse: httpResponse2,
                                        error: nil)
         
-        return [url: response, url2: response2]
+        let strUrl3 = "https://191da1ac-768c-4c6a-80ad-b533beafec25.mock.pstmn.io/transfer-list/-1"
+        let url3 = URL(string: strUrl3)!
+        let data3 = #"""
+{
+    "error": "page-number starts from 1"
+}
+"""#.data(using: .utf8)
+        let httpResponse3 = HTTPURLResponse(url: url, statusCode: 400,
+                                           httpVersion: nil, headerFields: nil)
+        let response3 = ApiMockResponse(url: url3, data: data3,
+                                       httpResponse: httpResponse3,
+                                       error: nil)
+        
+        return [url: response, url2: response2, url3: response3]
     }
 }

@@ -37,6 +37,44 @@ final class ApiTests: XCTestCase {
             XCTAssertNil(error as? NetworkError)
         }
     }
+    
+    func testRealServerErrorTransferListApiCall() async {
+        
+        // given
+        api = ApiImpl()
+        do {
+
+            // when
+            let _ = try await api.callApi(route: .transferList(offset: -1),
+                                                 decodeType: [PersonBankAccountDTO].self)
+
+        } catch {
+            // then
+            XCTAssertNotNil(error as? NetworkError)
+            let responseError = ResponseError(message: "page-number starts from 1")
+            XCTAssertEqual(error as? NetworkError, .serverError(message: responseError))
+        }
+    }
+    
+    func testMockServerErrorTransferListApiCall() async {
+        
+        // given
+        let configuration = URLSessionConfiguration.default
+        configuration.protocolClasses = [ResponseMockURLProtocol.self]
+        let api = ApiImpl(configuration: configuration)
+        do {
+
+            // when
+            let _ = try await api.callApi(route: .transferList(offset: -1),
+                                                 decodeType: [PersonBankAccountDTO].self)
+
+        } catch {
+            // then
+            XCTAssertNotNil(error as? NetworkError)
+            let responseError = ResponseError(message: "page-number starts from 1")
+            XCTAssertEqual(error as? NetworkError, .serverError(message: responseError))
+        }
+    }
 
     func testSuccessMockResponse() async {
         

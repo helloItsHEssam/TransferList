@@ -58,7 +58,17 @@ final public class ApiImpl: Api {
                         }
                         
                     case .failure:
-                        continuation.resume(throwing: NetworkError.cannotConnectToServer)
+                        guard let data = responseData.data else {
+                            continuation.resume(throwing: NetworkError.cannotConnectToServer)
+                            return
+                        }
+
+                        guard let responseError = try? decoder.decode(ResponseError.self, from: data) else {
+                            continuation.resume(throwing: NetworkError.cannotConnectToServer)
+                            return
+                        }
+
+                        continuation.resume(throwing: NetworkError.serverError(message: responseError))
                     }
                 }
         }
