@@ -1,15 +1,15 @@
 //
-//  PersonBankAccountRepository.swift.swift
+//  Local.swift
 //  
 //
-//  Created by Hessam Mahdiabadi on 11/4/23.
+//  Created by Hessam Mahdiabadi on 11/5/23.
 //
 
 import Foundation
+import Domain
 
-public protocol PersonBankAccountRepository {
+public protocol Local {
     
-    func fetchPersonAccounts(withOffest offset: Int) async throws -> [PersonBankAccount]
     func fetchFavoritePersonAccounts() async throws -> [PersonBankAccount]
     func savePersonAccountToFavorites(_ personBankAccount: PersonBankAccount) async throws -> PersonBankAccount
     func removePersonAccountFromFavorites(_ personBankAccount: PersonBankAccount) async throws -> PersonBankAccount

@@ -9,9 +9,9 @@ import Foundation
 @testable import Domain
 
 class MockPersonBankAccountRepository: PersonBankAccountRepository {
-    
+
     func createMockPersonAccount() -> PersonBankAccount {
-        let person = Person(name: "hessam", emial: "h.mahdi", avatar: nil)
+        let person = Person(name: "hessam", email: "h.mahdi", avatar: nil)
         let card = Card(cardNumber: "123", cardType: "master")
         let cardCount = CardTransferCount(numberOfTransfers: 12, totalTransfer: 12)
         let note = "note"
@@ -36,6 +36,10 @@ class MockPersonBankAccountRepository: PersonBankAccountRepository {
     }
     
     func updatefavoriteStatusForPersonAccount(_ personBankAccount: Domain.PersonBankAccount) async -> Domain.PersonBankAccount {
+        return personBankAccount
+    }
+    
+    func updatefavoriteStatusBasedOnFavorites(_ personBankAccount: Domain.PersonBankAccount) async -> Domain.PersonBankAccount {
         return personBankAccount
     }
 }
