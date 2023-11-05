@@ -1,4 +1,4 @@
-name: Domain Layer
+name: Data Layer
 
 on:
   pull_request:
@@ -19,11 +19,11 @@ jobs:
         
     - name: Lint code
       run: |
-        cd Domain/Sources/
+        cd Data/Sources/
         swiftlint
         
     - name: run unit test
       run: |
-        cd Domain/Sources/
+        cd Data/
         swift build
         swift test
