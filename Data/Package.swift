@@ -23,7 +23,8 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.        
         .target(
             name: "Data",
-            dependencies: ["Alamofire", "Domain"]),
+            dependencies: ["Alamofire", "Domain"],
+            resources: [.process("Resources")]),
         .testTarget(
             name: "DataTests",
             dependencies: ["Data"]),
