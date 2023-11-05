@@ -15,16 +15,14 @@ extension PersonBankAccountEntity {
         return NSFetchRequest<PersonBankAccountEntity>(entityName: "PersonBankAccountEntity")
     }
 
-    @NSManaged public var note: String?
-    @NSManaged public var lastTransfer: Date?
-    @NSManaged public var dateSaved: Date?
-    @NSManaged var person: PersonDTO?
-    @NSManaged var card: CardDTO?
+    @NSManaged var dateSaved: Date?
+    @NSManaged var lastTransfer: Date?
     @NSManaged var more_info: CardTransferCountDTO?
-
+    @NSManaged var note: String?
+    @NSManaged var isFavorite: Bool
+    @NSManaged var card: CardEntity?
+    @NSManaged var person: PersonEntity?
 }
-
-extension PersonBankAccountEntity: Identifiable {}
 
 extension PersonBankAccountEntity {
 

@@ -14,4 +14,5 @@ struct PersonBankAccountDTO: Decodable {
     var more_info: CardTransferCountDTO?
     var note: String?
     var last_transfer: Date?
+    var isFavorite: Bool = false
 }

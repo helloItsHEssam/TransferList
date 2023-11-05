@@ -18,14 +18,24 @@ final class DatabaseTests: XCTestCase {
     }
     
     private func createPersonAccountEntity(inContext: NSManagedObjectContext) {
+        
+        let person = PersonEntity(context: inContext)
+        person.name = "hessam"
+        person.email = "h.mahdi"
+        person.avatar = nil
+        
+        let card = CardEntity(context: inContext)
+        card.cardNumber = "123"
+        card.cardType = "master"
+        
         let account = PersonBankAccountEntity(context: inContext)
         let dateSaved = Date()
         let note = "note"
         account.dateSaved = dateSaved
         account.note = note
         account.lastTransfer = nil
-        account.person = PersonDTO(full_name: "hessam", email: "h.mahdi", avatar: nil)
-        account.card = .init(card_number: "123", card_type: "master")
+        account.person = person
+        account.card = card
         account.more_info = .init(number_of_transfers: 1, total_transfer: nil)
     }
     
@@ -50,8 +60,8 @@ final class DatabaseTests: XCTestCase {
 
                     XCTAssertEqual(results.count, 1)
                     XCTAssertEqual(results.first?.note, "note")
-                    XCTAssertEqual(results.first?.person?.full_name, "hessam")
-                    XCTAssertEqual(results.first?.card?.card_number, "123")
+                    XCTAssertEqual(results.first?.person?.name, "hessam")
+                    XCTAssertEqual(results.first?.card?.cardNumber, "123")
                     XCTAssertEqual(results.first?.more_info?.number_of_transfers, 1)
                 }
 

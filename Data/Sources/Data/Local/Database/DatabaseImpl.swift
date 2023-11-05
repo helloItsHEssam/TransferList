@@ -16,8 +16,6 @@ public class DatabaseImpl: Database {
     public required init() {
         setupPersistentContainer()
         
-        PersonDTOTransformer.register()
-        CardDTOTransformer.register()
         CardTransferCountDTOTransformer.register()
     }
 
