@@ -10,19 +10,23 @@ import CoreData
 
 public class DatabaseImpl: Database {
 
-    private let modelName = "db"
-    public private(set) var persistentContainer: NSPersistentContainer!
+    private(set) var modelName = "db"
+    private var persistentContainer: PersistentContainer!
     
-    public required init() {        
+    public required init() {
         setupPersistentContainer()
+        
+        PersonDTOTransformer.register()
+        CardDTOTransformer.register()
+        CardTransferCountDTOTransformer.register()
     }
 
-    lazy public var viewContext: NSManagedObjectContext = {
+    public lazy var viewContext: NSManagedObjectContext = {
         let context = persistentContainer.viewContext
         return context
     }()
 
-    lazy public var backgroundContext: NSManagedObjectContext = {
+    public lazy var backgroundContext: NSManagedObjectContext = {
         let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
         context.parent = viewContext
         context.automaticallyMergesChangesFromParent = true
@@ -31,13 +35,16 @@ public class DatabaseImpl: Database {
     }()
     
     private func setupPersistentContainer() {
-        let container = NSPersistentContainer(name: modelName)
+        guard let modelURL = Bundle.module.url(forResource: modelName, withExtension: "momd") else { return }
+        guard let model = NSManagedObjectModel(contentsOf: modelURL) else { return }
+        
+        let container = PersistentContainer(name: modelName, managedObjectModel: model)
         container.loadPersistentStores(completionHandler: { _, error in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         })
-
+        
         persistentContainer = container
     }
 }

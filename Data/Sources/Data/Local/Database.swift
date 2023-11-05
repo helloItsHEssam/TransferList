@@ -10,8 +10,7 @@ import CoreData
 
 public protocol Database {
 
-    var persistentContainer: NSPersistentContainer! { get }
-    var viewContext: NSManagedObjectContext { get }
+    var viewContext: NSManagedObjectContext { set get }
     var backgroundContext: NSManagedObjectContext { get }
     func saveContext() throws
     func saveBackgroundContext() throws
