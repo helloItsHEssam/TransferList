@@ -16,7 +16,7 @@ final class ApiTests: XCTestCase {
         api = nil
     }
 
-    func testRealMediaListApiCall() async {
+    func testRealTransferListApiCall() async {
         
         // given
         api = ApiImpl()

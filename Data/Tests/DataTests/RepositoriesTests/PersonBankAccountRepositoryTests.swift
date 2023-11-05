@@ -10,17 +10,18 @@ import Domain
 @testable import Data
 
 final class PersonBankAccountRepositoryTests: XCTestCase {
-
+    
     var repository: PersonBankAccountRepository!
     
     override func tearDown() {
         repository = nil
     }
     
-    func testSuccessFetchMediaList() async {
+    func testSuccessFetchTransferList() async {
         
         // given
-        repository = PersonBankAccountRepositoryImpl(api: MockApi())
+        repository = PersonBankAccountRepositoryImpl(api: MockApi(),
+                                                     local: MockLocal())
         
         do {
             // when
@@ -37,20 +38,110 @@ final class PersonBankAccountRepositoryTests: XCTestCase {
             XCTAssertNil(error)
         }
     }
-
-    func testFailFetchMediaList() async {
-
+    
+    func testFailFetchTransferList() async {
+        
         // given
-        repository = PersonBankAccountRepositoryImpl(api: MockFailConnectToServerApi())
-
+        repository = PersonBankAccountRepositoryImpl(api: MockFailConnectToServerApi()
+                                                     , local: MockLocal())
+        
         do {
             // when
             let _ = try await repository.fetchPersonAccounts(withOffest: 10)
-
+            
         } catch {
-
+            
             // then
             XCTAssertNotNil(error)
+        }
+    }
+    
+    func testSuccessSaveToFavorite() async {
+        // given
+        let local = MockLocal()
+        repository = PersonBankAccountRepositoryImpl(api: MockFailConnectToServerApi()
+                                                     , local: local)
+        
+        do {
+            // when
+            let account = try await repository.savePersonAccountToFavorites(local.createAccount())
+            XCTAssertEqual(account.isFavorite, true)
+            
+        } catch {
+            // then
+            XCTAssertNotNil(error)
+        }
+    }
+    
+    func testSuccessRemoveFromFavorite() async {
+        // given
+        let local = MockSucceesRemoveLocal()
+        repository = PersonBankAccountRepositoryImpl(api: MockFailConnectToServerApi()
+                                                     , local: local)
+        
+        do {
+            // when
+            let account = try await repository.removePersonAccountFromFavorites(local.createAccount())
+            XCTAssertEqual(account.isFavorite, false)
+            
+            let accounts = try await repository.fetchFavoritePersonAccounts()
+            XCTAssertTrue(accounts.isEmpty)
+            
+        } catch {
+            // then
+            XCTAssertNotNil(error)
+        }
+    }
+    
+    func testFailSaveFromFavorite() async {
+        // given
+        let local = MockFailSaveOrRemoveLocal()
+        repository = PersonBankAccountRepositoryImpl(api: MockFailConnectToServerApi()
+                                                     , local: local)
+        
+        do {
+            // when
+            let _ = try await repository.savePersonAccountToFavorites(local.createAccount())
+            
+            let accounts = try await repository.fetchFavoritePersonAccounts()
+            XCTAssertTrue(accounts.isEmpty)
+            
+        } catch {
+            // then
+            XCTAssertEqual(error as? LocalError, .cannotSavePersonAccountToFavorites)
+        }
+    }
+    
+    func testFailRemoveFromFavorite() async {
+        // given
+        let local = MockFailSaveOrRemoveLocal()
+        repository = PersonBankAccountRepositoryImpl(api: MockFailConnectToServerApi()
+                                                     , local: local)
+        
+        do {
+            // when
+            let _ = try await repository.removePersonAccountFromFavorites(local.createAccount())
+            
+        } catch {
+            // then
+            XCTAssertEqual(error as? LocalError, .cannotRemovePersonAccountFromFavorites)
+        }
+    }
+    
+    func testSuccessFetchFavoriteAccounts() async {
+        
+        // given
+        let local = MockFailFetchFavoriteAccountLocal()
+        repository = PersonBankAccountRepositoryImpl(api: MockApi(),
+                                                     local: local)
+        
+        do {
+            // when
+            let _ = try await repository.fetchFavoritePersonAccounts()
+            
+        } catch {
+            // then
+            XCTAssertEqual(error as? LocalError, .cannotFetchFavorites)
         }
     }
 }

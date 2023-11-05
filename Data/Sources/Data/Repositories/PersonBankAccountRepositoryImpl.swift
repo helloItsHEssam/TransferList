@@ -11,10 +11,12 @@ import Domain
 public class PersonBankAccountRepositoryImpl: PersonBankAccountRepository {
     
     private var api: Api
+    private var local: Local
     private let mapper: PersonBankAccountMapper
     
-    public init(api: Api) {
+    public init(api: Api, local: Local) {
         self.api = api
+        self.local = local
         mapper = .init(personMapper: .init(),
                        cardMapper: .init(),
                        cardTransferCountMapper: .init())
@@ -27,15 +29,15 @@ public class PersonBankAccountRepositoryImpl: PersonBankAccountRepository {
     }
     
     public func fetchFavoritePersonAccounts() async throws -> [Domain.PersonBankAccount] {
-        fatalError()
+        try await local.fetchFavoritePersonAccounts()
     }
     
     public func savePersonAccountToFavorites(_ personBankAccount: Domain.PersonBankAccount) async throws -> Domain.PersonBankAccount {
-        fatalError()
+        try await local.savePersonAccountToFavorites(personBankAccount)
     }
     
     public func removePersonAccountFromFavorites(_ personBankAccount: Domain.PersonBankAccount) async throws -> Domain.PersonBankAccount {
-        fatalError()
+        try await local.removePersonAccountFromFavorites(personBankAccount)
     }
     
     public func updatefavoriteStatusForPersonAccount(_ personBankAccount: Domain.PersonBankAccount) async -> Domain.PersonBankAccount {
