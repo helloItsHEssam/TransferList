@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Api {
+public protocol Api {
 
     func callApi<T: Decodable>(route: ApiRouter, decodeType type: T.Type) async throws -> T
 }

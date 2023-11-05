@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct PersonBankAccountDTO: Decodable {
+struct PersonBankAccountDTO: Decodable {
     
     var person: PersonDTO?
     var card: CardDTO?
