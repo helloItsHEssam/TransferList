@@ -9,31 +9,37 @@ import Foundation
 
 class CardTransferCountDTO: NSObject, NSSecureCoding, Decodable {
     
-    enum Key: String {
-        case numberOfTransfers
-        case totalTransfer
-    }
-    
     static var supportsSecureCoding: Bool = true
-    var number_of_transfers: Int?
-    var total_transfer: Int?
+    var numberOfTransfers: Int?
+    var totalTransfer: Int?
     
-    init(number_of_transfers: Int? = nil, total_transfer: Int? = nil) {
-        self.number_of_transfers = number_of_transfers
-        self.total_transfer = total_transfer
+    init(numberOfTransfers: Int? = nil, totalTransfer: Int? = nil) {
+        self.numberOfTransfers = numberOfTransfers
+        self.totalTransfer = totalTransfer
     }
     
     func encode(with coder: NSCoder) {
-        coder.encode(number_of_transfers, forKey: Key.numberOfTransfers.rawValue)
-        coder.encode(total_transfer, forKey: Key.totalTransfer.rawValue)
+        coder.encode(numberOfTransfers, forKey: CodingKeys.numberOfTransfers.rawValue)
+        coder.encode(totalTransfer, forKey: CodingKeys.totalTransfer.rawValue)
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case numberOfTransfers = "number_of_transfers"
+        case totalTransfer = "total_transfer"
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.numberOfTransfers = try container.decodeIfPresent(Int.self, forKey: .numberOfTransfers)
+        self.totalTransfer = try container.decodeIfPresent(Int.self, forKey: .totalTransfer)
     }
     
     required convenience init?(coder: NSCoder) {
-        let number_of_transfers = coder.decodeObject(of: NSNumber.self,
-                                                     forKey: Key.numberOfTransfers.rawValue)?.intValue
-        let total_transfer = coder.decodeObject(of: NSNumber.self,
-                                                forKey: Key.totalTransfer.rawValue)?.intValue
+        let numberOfTransfers = coder.decodeObject(of: NSNumber.self,
+                                                     forKey: CodingKeys.numberOfTransfers.rawValue)?.intValue
+        let totalTransfer = coder.decodeObject(of: NSNumber.self,
+                                                forKey: CodingKeys.totalTransfer.rawValue)?.intValue
 
-        self.init(number_of_transfers: number_of_transfers, total_transfer: total_transfer)
+        self.init(numberOfTransfers: numberOfTransfers, totalTransfer: totalTransfer)
     }
 }

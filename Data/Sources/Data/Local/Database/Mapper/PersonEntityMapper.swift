@@ -22,7 +22,7 @@ struct PersonEntityMapper: Mapper {
     func mapDtoToEntity(input: PersonDTO?) -> PersonEntity? {
         guard let input else { return nil }
         let entity = PersonEntity(context: context)
-        entity.name = input.full_name
+        entity.name = input.fullName
         entity.avatar = input.avatar
         entity.email = input.email
 
@@ -31,7 +31,7 @@ struct PersonEntityMapper: Mapper {
 
     func mapEntityToDto(input: PersonEntity?) -> PersonDTO? {
         guard let input else { return nil }
-        return .init(full_name: input.name, email: input.email,
+        return .init(fullName: input.name, email: input.email,
                      avatar: input.avatar)
     }
 }

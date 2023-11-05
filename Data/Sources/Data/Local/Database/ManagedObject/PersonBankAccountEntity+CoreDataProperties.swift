@@ -17,7 +17,7 @@ extension PersonBankAccountEntity {
 
     @NSManaged var dateSaved: Date?
     @NSManaged var lastTransfer: Date?
-    @NSManaged var more_info: CardTransferCountDTO?
+    @NSManaged var moreInfo: CardTransferCountDTO?
     @NSManaged var note: String?
     @NSManaged var isFavorite: Bool
     @NSManaged var card: CardEntity?

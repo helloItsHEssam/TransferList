@@ -15,11 +15,11 @@ struct CardMapper: Mapper {
     
     func mapDtoToEntity(input: CardDTO?) -> Card? {
         guard let input else { return nil }
-        return .init(cardNumber: input.card_number, cardType: input.card_type)
+        return .init(cardNumber: input.cardNumber, cardType: input.cardType)
     }
     
     func mapEntityToDto(input: Card?) -> CardDTO? {
         guard let input else { return nil }
-        return .init(card_number: input.cardNumber, card_type: input.cardType)
+        return .init(cardNumber: input.cardNumber, cardType: input.cardType)
     }
 }

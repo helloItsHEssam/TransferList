@@ -36,7 +36,7 @@ final class DatabaseTests: XCTestCase {
         account.lastTransfer = nil
         account.person = person
         account.card = card
-        account.more_info = .init(number_of_transfers: 1, total_transfer: nil)
+        account.moreInfo = .init(numberOfTransfers: 1, totalTransfer: nil)
     }
     
     func testSavePersonAccount() {
@@ -62,7 +62,7 @@ final class DatabaseTests: XCTestCase {
                     XCTAssertEqual(results.first?.note, "note")
                     XCTAssertEqual(results.first?.person?.name, "hessam")
                     XCTAssertEqual(results.first?.card?.cardNumber, "123")
-                    XCTAssertEqual(results.first?.more_info?.number_of_transfers, 1)
+                    XCTAssertEqual(results.first?.moreInfo?.numberOfTransfers, 1)
                 }
 
             } catch {

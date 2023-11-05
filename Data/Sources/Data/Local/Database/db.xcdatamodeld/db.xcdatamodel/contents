@@ -9,7 +9,7 @@
         <attribute name="dateSaved" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="isFavorite" optional="YES" transient="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="lastTransfer" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="more_info" optional="YES" attributeType="Transformable" valueTransformerName="CardTransferCountDTOTransformer"/>
+        <attribute name="moreInfo" optional="YES" attributeType="Transformable" valueTransformerName="CardTransferCountDTOTransformer"/>
         <attribute name="note" optional="YES" attributeType="String"/>
         <relationship name="card" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CardEntity" inverseName="account" inverseEntity="CardEntity"/>
         <relationship name="person" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PersonEntity" inverseName="account" inverseEntity="PersonEntity"/>

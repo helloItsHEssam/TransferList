@@ -15,13 +15,13 @@ struct CardTransferCountMapper: Mapper {
     
     func mapDtoToEntity(input: CardTransferCountDTO?) -> CardTransferCount? {
         guard let input else { return nil }
-        return .init(numberOfTransfers: input.number_of_transfers,
-                     totalTransfer: input.total_transfer)
+        return .init(numberOfTransfers: input.numberOfTransfers,
+                     totalTransfer: input.totalTransfer)
     }
     
     func mapEntityToDto(input: CardTransferCount?) -> CardTransferCountDTO? {
         guard let input else { return nil }
-        return .init(number_of_transfers: input.numberOfTransfers,
-                     total_transfer: input.totalTransfer)
+        return .init(numberOfTransfers: input.numberOfTransfers,
+                     totalTransfer: input.totalTransfer)
     }
 }

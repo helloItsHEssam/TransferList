@@ -28,10 +28,10 @@ struct PersonBankAccountEntityMapper: Mapper {
     func mapDtoToEntity(input: PersonBankAccountDTO) -> PersonBankAccountEntity {
         let entity = PersonBankAccountEntity(context: context)
         entity.person = personEntityMapper.mapDtoToEntity(input: input.person)
-        entity.more_info = input.more_info
+        entity.moreInfo = input.moreInfo
         entity.card = cardEntityMapper.mapDtoToEntity(input: input.card)
         entity.note = input.note
-        entity.lastTransfer = input.last_transfer
+        entity.lastTransfer = input.lastTransfer
         entity.dateSaved = Date()
         
         return entity
@@ -41,7 +41,7 @@ struct PersonBankAccountEntityMapper: Mapper {
         let person = personEntityMapper.mapEntityToDto(input: input.person)
         let card = cardEntityMapper.mapEntityToDto(input: input.card)
         return .init(person: person, card: card,
-                     more_info: input.more_info, note: input.note,
-                     last_transfer: input.lastTransfer, isFavorite: input.isFavorite)
+                     moreInfo: input.moreInfo, note: input.note,
+                     lastTransfer: input.lastTransfer, isFavorite: input.isFavorite)
     }
 }

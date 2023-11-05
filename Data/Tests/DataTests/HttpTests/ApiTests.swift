@@ -28,9 +28,10 @@ final class ApiTests: XCTestCase {
 
             // then
             XCTAssertEqual(accounts.count, 10)
-            XCTAssertEqual(accounts.first?.person?.full_name, "Jemimah Sprott")
+            XCTAssertEqual(accounts.first?.person?.fullName, "Jemimah Sprott")
             XCTAssertEqual(accounts.first?.person?.email, nil)
-            XCTAssertEqual(accounts.first?.card?.card_number, "5602217292772382")
+            XCTAssertEqual(accounts.first?.card?.cardNumber, "5602217292772382")
+            XCTAssertEqual(accounts.first?.moreInfo?.numberOfTransfers, 74)
 
         } catch {
             // then
@@ -90,9 +91,9 @@ final class ApiTests: XCTestCase {
             
             // then
             XCTAssertEqual(accounts.count, 2)
-            XCTAssertEqual(accounts.first?.person?.full_name, "Jemimah Sprott")
+            XCTAssertEqual(accounts.first?.person?.fullName, "Jemimah Sprott")
             XCTAssertEqual(accounts.first?.person?.email, nil)
-            XCTAssertEqual(accounts.first?.card?.card_number, "5602217292772382")
+            XCTAssertEqual(accounts.first?.card?.cardNumber, "5602217292772382")
             
         } catch {
 

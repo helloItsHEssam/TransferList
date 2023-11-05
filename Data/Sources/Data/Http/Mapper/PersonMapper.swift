@@ -15,13 +15,13 @@ struct PersonMapper: Mapper {
     
     func mapDtoToEntity(input: PersonDTO?) -> Person? {
         guard let input else { return nil }
-        return .init(name: input.full_name, email: input.email,
+        return .init(name: input.fullName, email: input.email,
                      avatar: input.avatar)
     }
     
     func mapEntityToDto(input: Person?) -> PersonDTO? {
         guard let input else { return nil }
-        return .init(full_name: input.name, email: input.email,
+        return .init(fullName: input.name, email: input.email,
                      avatar: input.avatar)
     }
 }
