@@ -84,7 +84,7 @@ public class PersonBankAccountUseCaseImpl: PersonBankAccountUseCase {
             func createUpdateFavoriteStatusTask(atIndex index: Int) {
                 taskGroup.addTask {
                     var updatedAccount = await self.repository
-                        .updatefavoriteStatusForPersonAccount(accounts[index])
+                        .updatefavoriteStatusBasedOnFavorites(accounts[index])
                     updatedAccount.update(indexAtList: index)
                     return updatedAccount
                 }

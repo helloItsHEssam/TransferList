@@ -70,10 +70,49 @@ final class LocalTests: XCTestCase {
         
         // when
         do {
-            let _ = try await local.savePersonAccountToFavorites(createBankAccount())            
+            let _ = try await local.savePersonAccountToFavorites(createBankAccount())
             let accounts = try await local.fetchFavoritePersonAccounts()
             
             XCTAssertEqual(accounts.count, 1)
+            
+        } catch {
+            // then
+            XCTAssertNil(error)
+        }
+    }
+    
+    func testSuccessUpdateFavoriteStatus() async {
+        
+        // given
+        local = LocalImpl(database: MockDatabase())
+        
+        // when
+        do {
+            let _ = try await local.savePersonAccountToFavorites(createBankAccount())
+            let account = await local.updatefavoriteStatusBasedOnFavorites(createBankAccount())
+            
+            XCTAssertEqual(account.isFavorite, true)
+            
+        } catch {
+            // then
+            XCTAssertNil(error)
+        }
+    }
+    
+    func testDoesNotUpdateFavoriteStatus() async {
+        
+        // given
+        local = LocalImpl(database: MockDatabase())
+        
+        // when
+        do {
+            let _ = try await local.savePersonAccountToFavorites(createBankAccount())
+            var newAccountDoesNotExsit = createBankAccount()
+            newAccountDoesNotExsit.person?.name = "new person"
+            newAccountDoesNotExsit.card?.cardNumber = "453"
+            let account = await local.updatefavoriteStatusBasedOnFavorites(newAccountDoesNotExsit)
+            
+            XCTAssertEqual(account.isFavorite, false)
             
         } catch {
             // then

@@ -38,6 +38,12 @@ class MockLocal: Local {
         newAccount.update(favoriteStatus: false)
         return newAccount
     }
+    
+    func updatefavoriteStatusBasedOnFavorites(_ personBankAccount: PersonBankAccount) async -> PersonBankAccount {
+        var newAccount = personBankAccount
+        newAccount.update(favoriteStatus: true)
+        return newAccount
+    }
 }
 
 class MockSucceesRemoveLocal: MockLocal {
@@ -62,5 +68,14 @@ class MockFailFetchFavoriteAccountLocal: MockLocal {
     
     override func fetchFavoritePersonAccounts() async throws -> [PersonBankAccount] {
         throw LocalError.cannotFetchFavorites
+    }
+}
+
+class MockDoesNotExistInFavoriteLocal: MockLocal {
+    
+    override func updatefavoriteStatusBasedOnFavorites(_ personBankAccount: PersonBankAccount) async -> PersonBankAccount {
+        var newAccount = personBankAccount
+        newAccount.update(favoriteStatus: false)
+        return newAccount
     }
 }

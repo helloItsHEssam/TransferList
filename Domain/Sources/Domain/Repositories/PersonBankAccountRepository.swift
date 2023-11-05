@@ -13,5 +13,5 @@ public protocol PersonBankAccountRepository {
     func fetchFavoritePersonAccounts() async throws -> [PersonBankAccount]
     func savePersonAccountToFavorites(_ personBankAccount: PersonBankAccount) async throws -> PersonBankAccount
     func removePersonAccountFromFavorites(_ personBankAccount: PersonBankAccount) async throws -> PersonBankAccount
-    func updatefavoriteStatusForPersonAccount(_ personBankAccount: PersonBankAccount) async -> PersonBankAccount
+    func updatefavoriteStatusBasedOnFavorites(_ personBankAccount: PersonBankAccount) async -> PersonBankAccount
 }

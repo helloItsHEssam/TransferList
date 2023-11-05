@@ -151,4 +151,50 @@ public class LocalImpl: Local {
             }
         }
     }
+    
+    public func updatefavoriteStatusBasedOnFavorites(_ personBankAccount: PersonBankAccount) async -> PersonBankAccount {
+        return await withCheckedContinuation { [weak self] continuation in
+            guard let self else {
+                continuation.resume(returning: personBankAccount)
+                return
+            }
+            
+            self.database.backgroundContext.performAndWait { [weak self] in
+                guard let self else {
+                    continuation.resume(returning: personBankAccount)
+                    return
+                }
+                
+                do {
+                    let fetchRequest:
+                    NSFetchRequest<PersonBankAccountEntity> = PersonBankAccountEntity.fetchRequest()
+                    let sort = PersonBankAccountEntity.sortDescriptor
+                    fetchRequest.sortDescriptors = [sort]
+                    fetchRequest.fetchLimit = 1
+                    
+                    let namePredicate = NSPredicate(format: "person.name == %@",
+                                                    personBankAccount.person?.name ?? "")
+                    let cardNumberPredicate = NSPredicate(format: "card.cardNumber == %@",
+                                                          personBankAccount.card?.cardNumber ?? "")
+                    let predicate = NSCompoundPredicate(type: .and,
+                                                        subpredicates: [namePredicate, cardNumberPredicate])
+                    fetchRequest.predicate = predicate
+
+                    try Task.checkCancellation()
+                    let accounts = try self.database.backgroundContext.fetch(fetchRequest)
+                    guard let entity = accounts.first else {
+                        continuation.resume(returning: personBankAccount)
+                        return
+                    }
+
+                    var newPersonBankAccount = personBankAccount
+                    newPersonBankAccount.update(favoriteStatus: entity.isFavorite)
+                    continuation.resume(returning: newPersonBankAccount)
+
+                } catch {
+                    continuation.resume(returning: personBankAccount)
+                }
+            }
+        }
+    }
 }

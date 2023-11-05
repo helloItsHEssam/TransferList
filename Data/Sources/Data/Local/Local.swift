@@ -13,4 +13,5 @@ public protocol Local {
     func fetchFavoritePersonAccounts() async throws -> [PersonBankAccount]
     func savePersonAccountToFavorites(_ personBankAccount: PersonBankAccount) async throws -> PersonBankAccount
     func removePersonAccountFromFavorites(_ personBankAccount: PersonBankAccount) async throws -> PersonBankAccount
+    func updatefavoriteStatusBasedOnFavorites(_ personBankAccount: PersonBankAccount) async -> PersonBankAccount
 }
