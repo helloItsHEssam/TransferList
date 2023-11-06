@@ -146,4 +146,16 @@ class HomeCollectionViewDataSource {
             return dataSource.snapshot().sectionIdentifier(containingItem: item)
         }
     }
+    
+    func getAccount(at indexPath: IndexPath) -> PersonBankAccount? {
+        guard let homeItem = dataSource.itemIdentifier(for: indexPath) else {
+            return nil
+        }
+
+        guard case let .personBankAccount(account) = homeItem else {
+            return nil
+        }
+
+        return account
+    }
 }

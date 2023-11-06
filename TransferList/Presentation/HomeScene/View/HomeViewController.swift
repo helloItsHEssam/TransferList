@@ -8,6 +8,7 @@
 import UIKit
 import UI
 import Combine
+import Domain
 
 class HomeViewController: BaseCollectionViewController {
 
@@ -18,9 +19,8 @@ class HomeViewController: BaseCollectionViewController {
     
     override func setupViews() {
         super.setupViews()
-
-        collectionView.contentInset.top = 32
-        collectionView.delegate = self
+        
+        configureCollectionView()
         configureRefresher()
         configureDataSource()
         observeDidChangeData()        
@@ -29,6 +29,11 @@ class HomeViewController: BaseCollectionViewController {
     }
     
     override var spaceSeparatorFromEdgeInList: CGFloat { return 0 }
+    
+    private func configureCollectionView() {
+        collectionView.contentInset.top = 32
+        collectionView.delegate = self
+    }
     
     private func configureRefresher() {
         collectionView.alwaysBounceVertical = true
@@ -55,6 +60,24 @@ class HomeViewController: BaseCollectionViewController {
                 self?.dataSource.updateData(data)
             }
             .store(in: &subscriptions)
+        
+        viewModel.$changeView
+            .compactMap { $0 }
+            .sink { [weak self] route in
+                guard case let .detail(account) = route else {
+                    return
+                }
+                self?.navigateToDetailViewController(withAccount: account)
+            }
+            .store(in: &subscriptions)
+    }
+    
+    private func navigateToDetailViewController(withAccount account: PersonBankAccount) {
+        let detailViewController = DetailAccountViewConroller()
+        detailViewController.updateConfiguration(.init(viewModel: viewModel,
+                                                       account: account))
+        
+        navigationController?.pushViewController(detailViewController, animated: true)
     }
 
     func createCustomSection(at section: Int) -> NSCollectionLayoutSection? {
@@ -77,6 +100,13 @@ class HomeViewController: BaseCollectionViewController {
 }
 
 extension HomeViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let account = dataSource.getAccount(at: indexPath) else {
+            return
+        }
+        viewModel.accountSelected(account)
+    }
     
     func collectionView(_ collectionView: UICollectionView,
                         willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

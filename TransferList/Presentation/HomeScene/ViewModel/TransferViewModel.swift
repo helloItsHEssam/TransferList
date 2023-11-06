@@ -13,6 +13,7 @@ class TransferViewModel {
     
     @Published var viewState: ViewState!
     @Published var dataUpdated: DataTransfer<PersonBankAccount>!
+    @Published var changeView: Router!
     private let useCase: PersonBankAccountUseCase
     private var subscriptions = Set<AnyCancellable>()
     private var paginationMode = PaginationMode()
@@ -33,6 +34,21 @@ class TransferViewModel {
     
     private func updateViewState(newState viewState: ViewState) {
         self.viewState = viewState
+    }
+    
+    private func updateAccounts(appendAccounts accounts: [PersonBankAccount]) {
+        guard !accounts.isEmpty else {
+            paginationMode.mode = .reachedToEnd
+            return
+        }
+
+        if dataFromServer == nil {
+            dataFromServer = .init(list: accounts, mode: .initial, section: .personBankAccounts)
+        } else {
+            dataFromServer.append(contentsOf: accounts)
+        }
+        
+        dataUpdated = dataFromServer
     }
     
     public func fetchFavoriteList() {
@@ -90,18 +106,7 @@ class TransferViewModel {
         fetchTransferList()
     }
     
-    private func updateAccounts(appendAccounts accounts: [PersonBankAccount]) {
-        guard !accounts.isEmpty else {
-            paginationMode.mode = .reachedToEnd
-            return
-        }
-
-        if dataFromServer == nil {
-            dataFromServer = .init(list: accounts, mode: .initial, section: .personBankAccounts)
-        } else {
-            dataFromServer.append(contentsOf: accounts)
-        }
-        
-        dataUpdated = dataFromServer
+    public func accountSelected(_ account: PersonBankAccount) {
+        changeView = .detail(account: account)
     }
 }
