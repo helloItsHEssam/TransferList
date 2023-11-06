@@ -1,0 +1,29 @@
+name: Domain Layer
+
+on:
+  pull_request:
+    branches:
+      - '*'
+      - '*/*'
+
+jobs:
+  build:
+    runs-on: macos-13
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SwiftLint
+      run: brew install swiftlint
+        
+    - name: Lint code
+      run: |
+        cd Domain/Sources/
+        swiftlint
+        
+    - name: run unit test
+      run: |
+        cd Domain/Sources/
+        swift build
+        swift test
