@@ -19,11 +19,13 @@ class HomeViewController: BaseCollectionViewController {
     override func setupViews() {
         super.setupViews()
 
+        collectionView.contentInset.top = 32
         collectionView.delegate = self
         configureRefresher()
         configureDataSource()
         observeDidChangeData()        
         viewModel.fetchTransferList()
+        viewModel.fetchFavoriteList()
     }
     
     override var spaceSeparatorFromEdgeInList: CGFloat { return 0 }
@@ -53,6 +55,24 @@ class HomeViewController: BaseCollectionViewController {
                 self?.dataSource.updateData(data)
             }
             .store(in: &subscriptions)
+    }
+
+    func createCustomSection(at section: Int) -> NSCollectionLayoutSection? {
+        guard dataSource.sectionIdentifier(atSection: section) == .favoriteBankAcconts else {
+            return nil
+        }
+
+        let itemSize = NSCollectionLayoutSize(widthDimension: .estimated(80),
+                                              heightDimension: .estimated(80))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        item.edgeSpacing = .init(leading: .fixed(18), top: nil, trailing: nil, bottom: nil)
+
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize, subitems: [item])
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.orthogonalScrollingBehavior = .continuous
+
+        return section
     }
 }
 

@@ -31,12 +31,23 @@ class TransferViewModel {
         subscriptions.removeAll()
     }
     
-//    private func updateViewState(newState viewState: ViewState) {
-//        self.viewState = viewState
-//    }
+    private func updateViewState(newState viewState: ViewState) {
+        self.viewState = viewState
+    }
+    
+    public func fetchFavoriteList() {
+        useCase.fetchPersonAccounts(withOffest: paginationMode.nextOffset)
+            .replaceError(with: [])
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] accounts in
+                guard let self else { return }
+                self.dataUpdated = self.dataFromLocal
+            })
+            .store(in: &subscriptions)
+    }
     
     public func fetchTransferList() {
-        viewState = .loading
+        updateViewState(newState: .loading)
         
         useCase.fetchPersonAccounts(withOffest: paginationMode.nextOffset)
             .receive(on: DispatchQueue.main)
@@ -47,7 +58,7 @@ class TransferViewModel {
                 case .finished: break
                     
                 case .failure(let error):
-                    self.viewState = .error(message: error.localizedDescription)
+                    updateViewState(newState: .error(message: error.localizedDescription))
                     break
                 }
                 
@@ -55,7 +66,7 @@ class TransferViewModel {
                 guard let self else { return }
                 self.updateAccounts(appendAccounts: accounts)
                 self.paginationMode.moveToNextOffset()
-                self.viewState = .result
+                updateViewState(newState: .result)
             }
             .store(in: &subscriptions)
     }

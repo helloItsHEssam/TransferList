@@ -13,6 +13,7 @@ enum HomeItem: Hashable {
 
     enum Section: CaseIterable {
         case FavoritesTitle
+        case favoriteBankAcconts
         case allTitle
         case personBankAccounts
     }

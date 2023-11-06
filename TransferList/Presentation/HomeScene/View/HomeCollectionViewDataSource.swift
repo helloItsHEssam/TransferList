@@ -16,6 +16,7 @@ class HomeCollectionViewDataSource {
     
     private var dataSource: DiffableDataSource!
     private var collectionView: BaseCollectionView
+    private let semaphore = DispatchSemaphore(value: 1)
     
     init(collectionView: BaseCollectionView) {
         self.collectionView = collectionView
@@ -26,7 +27,8 @@ class HomeCollectionViewDataSource {
     
     private func configureCollectionView() {
         collectionView.registerReusableCell(type: LargeHeaderCell.self)
-        collectionView.registerReusableCell(type: VerticalAccountCell.self)        
+        collectionView.registerReusableCell(type: VerticalAccountCell.self)
+        collectionView.registerReusableCell(type: FavoriteAccountCell.self)
     }
 
     private func configureDiffableDataSource() {
@@ -36,7 +38,7 @@ class HomeCollectionViewDataSource {
             case .header(let title):
                 return self?.createTitleCell(for: indexPath, title: title)
             case .personBankAccount(let account):
-                return self?.createVerticalAccount(for: indexPath, account: account)
+                return self?.createAccountCell(for: indexPath, account: account)
             }
         })
 
@@ -49,45 +51,89 @@ class HomeCollectionViewDataSource {
         return cell
     }
     
-    private func createVerticalAccount(for indexPath: IndexPath, account: PersonBankAccount) -> VerticalAccountCell {
-        let cell: VerticalAccountCell = collectionView.dequeueReusableCell(for: indexPath)
-        cell.setAccountItem(account)
-        return cell
+    private func createAccountCell(for indexPath: IndexPath, account: PersonBankAccount) -> AccountCell {
+        let section = sectionIdentifier(atSection: indexPath.section)
+        if section == .favoriteBankAcconts {
+            let cell: FavoriteAccountCell = collectionView.dequeueReusableCell(for: indexPath)
+            cell.setAccountItem(account)
+            return cell
+            
+        } else {
+            let cell: VerticalAccountCell = collectionView.dequeueReusableCell(for: indexPath)
+            cell.setAccountItem(account)
+            return cell
+        }
     }
     
     public func updateData(_ dataTransfer: DataTransfer<PersonBankAccount>) {
+        semaphore.wait()
+        
+        var snapshot: DiffableSnapshot!
         switch dataTransfer.section {
-        case .personBankAccounts: updateAllSection(dataTransfer)
-            
+        case .personBankAccounts: snapshot = self.updateAllSection(dataTransfer)
+        case .favoriteBankAcconts: snapshot = self.updateFavoriteSection(dataTransfer)
         default: break
         }
+        
+        dataSource.apply(snapshot, animatingDifferences: true)
+        
+        self.semaphore.signal()
     }
     
-    private func updateAllSection(_ dataTransfer: DataTransfer<PersonBankAccount>) {
+    private func updateFavoriteSection(_ dataTransfer: DataTransfer<PersonBankAccount>) -> DiffableSnapshot {
+        var snapshot = dataSource.snapshot()
+        
         let items = dataTransfer.list.map {
             return HomeItem.personBankAccount(account: $0)
         }
+        guard !items.isEmpty else { return snapshot }
         
-        var snapShot = dataSource.snapshot()
-        if snapShot.sectionIdentifiers.contains(dataTransfer.section) {
+        let newSections = [.FavoritesTitle, dataTransfer.section]
+        let firstSection = snapshot.sectionIdentifiers.first
+        if snapshot.sectionIdentifiers.isEmpty {
+            snapshot.appendSections(newSections)
+        } else {
+            snapshot.insertSections(newSections, beforeSection: firstSection!)
+        }
+        
+        snapshot.appendItems([.header(title: "Favorite")], toSection: .FavoritesTitle)
+        snapshot.appendItems(items, toSection: dataTransfer.section)
+        
+        return snapshot
+//        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    private func updateAllSection(_ dataTransfer: DataTransfer<PersonBankAccount>) -> DiffableSnapshot {
+        let items = dataTransfer.list.map {
+            return HomeItem.personBankAccount(account: $0)
+        }
+
+        var snapshot = dataSource.snapshot()
+        if snapshot.sectionIdentifiers.contains(dataTransfer.section) {
             if dataTransfer.mode == .append {
-                snapShot.appendItems(items, toSection: dataTransfer.section)
+                snapshot.appendItems(items, toSection: dataTransfer.section)
             } else {
-                snapShot.deleteItems(snapShot.itemIdentifiers(inSection: dataTransfer.section))
-                snapShot.appendItems(items, toSection: dataTransfer.section)
+                snapshot.deleteItems(snapshot.itemIdentifiers(inSection: dataTransfer.section))
+                snapshot.appendItems(items, toSection: dataTransfer.section)
             }
         } else {
             
-            if !snapShot.sectionIdentifiers.contains(.allTitle) {
-                snapShot.appendSections([.allTitle])
-                snapShot.appendItems([.header(title: "All")], toSection: .allTitle)
+            if !snapshot.sectionIdentifiers.contains(.allTitle) {
+                snapshot.appendSections([.allTitle])
+                snapshot.appendItems([.header(title: "All")], toSection: .allTitle)
             }
             
-            snapShot.appendSections([dataTransfer.section])
-            snapShot.appendItems(items, toSection: dataTransfer.section)
+            snapshot.appendSections([dataTransfer.section])
+            snapshot.appendItems(items, toSection: dataTransfer.section)
         }
-        
-        dataSource.apply(snapShot, animatingDifferences: true)
+
+        return snapshot
+    }
+    
+    public func sectionIdentifier(atSection section: Int) -> HomeItem.Section? {
+        let sections = dataSource.snapshot().sectionIdentifiers
+        guard sections.indices.contains(section) else { return nil }
+        return dataSource.snapshot().sectionIdentifiers[section]
     }
     
     public func sectionIdentifier(atIndexPath indexPath: IndexPath) -> HomeItem.Section? {
@@ -100,72 +146,4 @@ class HomeCollectionViewDataSource {
             return dataSource.snapshot().sectionIdentifier(containingItem: item)
         }
     }
-
-//    private func prepareToDecideShowTopicRowsBasedOn(topicCount count: Int, into snapShot: inout DiffableSnapshot) {
-//        let isContainTopicItems = snapShot.itemIdentifiers.contains(.topicsHeader)
-//        if count == 0 && isContainTopicItems {
-//            snapShot.deleteSections([.topicsHeader, .topics])
-//        }
-//    }
-//
-//    private func checkDeleteSearchOrTopicsBasedOnDeleteTopic(saveChangeIntoSnapShot snapShot: inout DiffableSnapshot) {
-//        if snapShot.itemIdentifiers(inSection: .topics).isEmpty {
-//            snapShot.deleteSections([.search, .topics, .topicsHeader])
-//        }
-//    }
-
-//    func loadTopicCount(count: Int) {
-//        var snapShot = dataSource.snapshot()
-//        languageItem.topicCount = count
-//        snapShot.reloadItems([.topicCount])
-//
-//        prepareToDecideShowTopicRowsBasedOn(topicCount: count, into: &snapShot)
-//        dataSource.apply(snapShot, animatingDifferences: true)
-//    }
-
-//    func loadFirstTimeTopics(topics items: [Topic]) {
-//        var snapShot = dataSource.snapshot()
-//        if !snapShot.sectionIdentifiers.contains(.topicsHeader) {
-//            snapShot.insertSections([.search, .topicsHeader, .topics], beforeSection: .overviewHeader)
-//            snapShot.appendItems([.topicsHeader], toSection: .topicsHeader)
-//            snapShot.appendItems([.search], toSection: .search)
-//        } else {
-//            // remove all topics and load with new sort
-//            snapShot.deleteItems(snapShot.itemIdentifiers(inSection: .topics))
-//        }
-//
-//        let topicItems = items.map { DetailLanguage.topics(item: $0) }
-//        snapShot.appendItems(topicItems, toSection: .topics)
-//
-//        dataSource.apply(snapShot, animatingDifferences: true)
-//    }
-
-
-//    func getTopic(at indexPath: IndexPath) -> Topic {
-//        guard let languageItem = dataSource.itemIdentifier(for: indexPath) else {
-//            return Topic.createEmptyTopic()
-//        }
-//
-//        guard case let .topics(item) = languageItem else {
-//            return Topic.createEmptyTopic()
-//        }
-//
-//        return item
-//    }
-
-//    func deleteTopics(topics items: [Topic]) {
-//        var snapshot = dataSource.snapshot()
-//        let items = items.map { DetailLanguage.topics(item: $0) }
-//        snapshot.deleteItems(items)
-//
-//        checkDeleteSearchOrTopicsBasedOnDeleteTopic(saveChangeIntoSnapShot: &snapshot)
-//        dataSource.apply(snapshot, animatingDifferences: true)
-//    }
-
-//    func updateTopic(topic item: Topic) {
-//        var snapshot = dataSource.snapshot()
-//        let item = DetailLanguage.topics(item: item)
-//        snapshot.reloadItems([item])
-//        dataSource.apply(snapshot, animatingDifferences: true)
-//    }
 }
