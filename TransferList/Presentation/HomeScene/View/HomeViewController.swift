@@ -11,6 +11,7 @@ import Combine
 
 class HomeViewController: BaseCollectionViewController {
 
+    @InstantiateView(type: UIRefreshControl.self) private var refresher
     private var dataSource: HomeCollectionViewDataSource!
     private let viewModel = ViewModelFactory.shared.createMediaViewModel()
     private var subscriptions = Set<AnyCancellable>()
@@ -18,6 +19,7 @@ class HomeViewController: BaseCollectionViewController {
     override func setupViews() {
         super.setupViews()
 
+        configureRefresher()
         configureDataSource()
         observeDidChangeData()        
         viewModel.fetchTransferList()
@@ -25,14 +27,29 @@ class HomeViewController: BaseCollectionViewController {
     
     override var spaceSeparatorFromEdgeInList: CGFloat { return 0 }
     
+    private func configureRefresher() {
+        collectionView.alwaysBounceVertical = true
+        refresher.tintColor = Theme.supplementaryBackground
+        refresher.addTarget(self, action: #selector(loadData), for: .valueChanged)
+        collectionView.addSubview(refresher)
+    }
+    
+    @objc func loadData() {
+        self.refresher.beginRefreshing()
+        
+        viewModel.refreshData()
+    }
+    
     private func configureDataSource() {
         dataSource = .init(collectionView: collectionView)
     }
     
     private func observeDidChangeData() {
-        viewModel.$bankAccounts
-            .sink { [weak self] accounts in
-                self?.dataSource?.updateAccounts(accounts)
+        viewModel.$dataUpdated
+            .compactMap { $0 }
+            .sink { [weak self] data in
+                self?.refresher.endRefreshing()
+                self?.dataSource.updateData(data)
             }
             .store(in: &subscriptions)
     }

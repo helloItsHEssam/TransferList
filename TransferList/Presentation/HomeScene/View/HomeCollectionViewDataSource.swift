@@ -22,7 +22,6 @@ class HomeCollectionViewDataSource {
         
         configureCollectionView()
         configureDiffableDataSource()
-        setupDiffableSnapshot()
     }
     
     private func configureCollectionView() {
@@ -44,13 +43,6 @@ class HomeCollectionViewDataSource {
         self.dataSource.supplementaryViewProvider = collectionView.makeSeprator()
     }
     
-    private func setupDiffableSnapshot() {
-        var initialSnapshot = DiffableSnapshot()
-        initialSnapshot.appendSections([.allTitle, .personBankAccounts])
-        initialSnapshot.appendItems([.header(title: "All")], toSection: .allTitle)
-        self.dataSource.apply(initialSnapshot, animatingDifferences: false)
-    }
-    
     private func createTitleCell(for indexPath: IndexPath, title: String) -> LargeHeaderCell {
         let cell: LargeHeaderCell = collectionView.dequeueReusableCell(for: indexPath)
         cell.setTitle(title)
@@ -63,19 +55,38 @@ class HomeCollectionViewDataSource {
         return cell
     }
     
-    public func LoadTitle(message: String) {
-        var snapShot = dataSource.snapshot()
-        snapShot.appendSections([.FavoritesTitle])
-        snapShot.appendItems([.header(title: message)], toSection: .FavoritesTitle)
-        dataSource.apply(snapShot, animatingDifferences: true)
+    public func updateData(_ dataTransfer: DataTransfer<PersonBankAccount>) {
+        switch dataTransfer.section {
+        case .personBankAccounts: updateAllSection(dataTransfer)
+            
+        default: break
+        }
     }
     
-    public func updateAccounts(_ accounts: [PersonBankAccount]) {
-        var snapShot = dataSource.snapshot()
-        let items = accounts.map {
+    private func updateAllSection(_ dataTransfer: DataTransfer<PersonBankAccount>) {
+        let items = dataTransfer.list.map {
             return HomeItem.personBankAccount(account: $0)
         }
-        snapShot.appendItems(items, toSection: .personBankAccounts)
+        
+        var snapShot = dataSource.snapshot()
+        if snapShot.sectionIdentifiers.contains(dataTransfer.section) {
+            if dataTransfer.mode == .append {
+                snapShot.appendItems(items, toSection: dataTransfer.section)
+            } else {
+                snapShot.deleteItems(snapShot.itemIdentifiers(inSection: dataTransfer.section))
+                snapShot.appendItems(items, toSection: dataTransfer.section)
+            }
+        } else {
+            
+            if !snapShot.sectionIdentifiers.contains(.allTitle) {
+                snapShot.appendSections([.allTitle])
+                snapShot.appendItems([.header(title: "All")], toSection: .allTitle)
+            }
+            
+            snapShot.appendSections([dataTransfer.section])
+            snapShot.appendItems(items, toSection: dataTransfer.section)
+        }
+        
         dataSource.apply(snapShot, animatingDifferences: true)
     }
 

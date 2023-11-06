@@ -10,7 +10,10 @@ import Foundation
 public struct PersonBankAccount: Identifiable, Hashable {
 
     public var id: String {
-        card?.cardNumber ?? UUID().uuidString
+        guard let name = person?.name, let cardNumber = card?.cardNumber else {
+            return UUID().uuidString
+        }
+        return name + cardNumber
     }
     public var person: Person?
     public var card: Card?

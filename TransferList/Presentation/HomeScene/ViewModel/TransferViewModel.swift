@@ -11,12 +11,12 @@ import Domain
 
 class TransferViewModel {
     
-//    @Published private(set) var viewState: ViewState = .loading
-    @Published var bankAccounts: [PersonBankAccount] = []
-//    @Published var path = NavigationPath()
+    @Published var dataUpdated: DataTransfer<PersonBankAccount>!
     private let useCase: PersonBankAccountUseCase
     private var subscriptions = Set<AnyCancellable>()
-    private var currentOffset: Int = 0
+    private var paginationMode = PaginationMode()
+    private var dataFromServer: DataTransfer<PersonBankAccount>!
+    private var dataFromLocal: DataTransfer<PersonBankAccount>!
     
     deinit {
         cancelAllPendingTask()
@@ -41,7 +41,7 @@ class TransferViewModel {
     func fetchTransferList() {
         // update view state
         
-        useCase.fetchPersonAccounts(withOffest: currentOffset + 1)
+        useCase.fetchPersonAccounts(withOffest: paginationMode.nextOffset)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 guard let self else { return }
@@ -57,58 +57,30 @@ class TransferViewModel {
             } receiveValue: { [weak self] accounts in
                 guard let self else { return }
                 self.updateAccounts(appendAccounts: accounts)
+                self.paginationMode.moveToNextOffset()
             }
             .store(in: &subscriptions)
     }
     
-    func updateAccounts(appendAccounts accounts: [PersonBankAccount]) {
+    public func refreshData() {
+        // check view state must not loading
+        
+        dataFromServer?.mode = .initial
+        fetchTransferList()
+    }
+    
+    private func updateAccounts(appendAccounts accounts: [PersonBankAccount]) {
         guard !accounts.isEmpty else {
             // reach to end
             return
         }
-        
-        bankAccounts.append(contentsOf: accounts)
-        currentOffset += 1
-    }
-    
-//    func fetchMediaList() {
-//        guard mediaList.isEmpty else {
-//            return
-//        }
-//
-//        updateViewState(newState: .loading)
-//
-//        useCase.fetchMediaList()
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] completion in
-//                guard let self else { return }
-//                switch completion {
-//                case .failure(let error):
-//                    let alertContent = AlertContent(message: error.localizedDescription)
-//                    self.updateViewState(newState: .error(alertContent: alertContent))
-//                case .finished: break
-//                }
-//            } receiveValue: { [weak self] mediaList in
-//                self?.mediaList = mediaList
-//                self?.updateViewState(newState: .result)
-//            }
-//            .store(in: &subscriptions)
-//    }
-    
-//    func fetchMediaImage(WithImageUrl imageUrl: String?, previewImage: @escaping BackImage) {
-//        guard let imageUrl else {
-//            previewImage(Image("imageFailed"))
-//            return
-//        }
-//
-//        useCase.fetchImage(withImageUrl: imageUrl)
-//            .retry(3)
-//            .replaceError(with: Image("imageFailed"))
-//            .receive(on: DispatchQueue.main)
-//            .sink(receiveValue: { image in
-//                previewImage(image)
-//            })
-//            .store(in: &subscriptions)
-//    }
-}
 
+        if dataFromServer == nil {
+            dataFromServer = .init(list: accounts, mode: .initial, section: .personBankAccounts)
+        } else {
+            dataFromServer.append(contentsOf: accounts)
+        }
+        
+        dataUpdated = dataFromServer
+    }
+}
