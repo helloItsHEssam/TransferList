@@ -11,6 +11,7 @@ import Domain
 
 class TransferViewModel {
     
+    @Published var viewState: ViewState!
     @Published var dataUpdated: DataTransfer<PersonBankAccount>!
     private let useCase: PersonBankAccountUseCase
     private var subscriptions = Set<AnyCancellable>()
@@ -33,13 +34,9 @@ class TransferViewModel {
 //    private func updateViewState(newState viewState: ViewState) {
 //        self.viewState = viewState
 //    }
-//
-//    func selected(media: Media) {
-//        path.append(NavigationRouter.DetailOfMedia(media: media))
-//    }
     
-    func fetchTransferList() {
-        // update view state
+    public func fetchTransferList() {
+        viewState = .loading
         
         useCase.fetchPersonAccounts(withOffest: paginationMode.nextOffset)
             .receive(on: DispatchQueue.main)
@@ -50,7 +47,7 @@ class TransferViewModel {
                 case .finished: break
                     
                 case .failure(let error):
-                    // show error
+                    self.viewState = .error(message: error.localizedDescription)
                     break
                 }
                 
@@ -58,20 +55,33 @@ class TransferViewModel {
                 guard let self else { return }
                 self.updateAccounts(appendAccounts: accounts)
                 self.paginationMode.moveToNextOffset()
+                self.viewState = .result
             }
             .store(in: &subscriptions)
     }
     
     public func refreshData() {
-        // check view state must not loading
+        guard viewState != .loading else { return }
         
+        paginationMode.reset()
         dataFromServer?.mode = .initial
+        fetchTransferList()
+    }
+    
+    public func itemDisplay(atSection section: HomeItem.Section, row: Int) {
+        guard viewState != .loading else { return }
+        guard section == .personBankAccounts else { return }
+        guard paginationMode.mode == .continues else { return }
+        guard dataFromServer.isLastItem(row: row) else { return }
+        
+        dataFromServer?.mode = .append
+        
         fetchTransferList()
     }
     
     private func updateAccounts(appendAccounts accounts: [PersonBankAccount]) {
         guard !accounts.isEmpty else {
-            // reach to end
+            paginationMode.mode = .reachedToEnd
             return
         }
 

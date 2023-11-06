@@ -19,6 +19,7 @@ class HomeViewController: BaseCollectionViewController {
     override func setupViews() {
         super.setupViews()
 
+        collectionView.delegate = self
         configureRefresher()
         configureDataSource()
         observeDidChangeData()        
@@ -30,11 +31,11 @@ class HomeViewController: BaseCollectionViewController {
     private func configureRefresher() {
         collectionView.alwaysBounceVertical = true
         refresher.tintColor = Theme.supplementaryBackground
-        refresher.addTarget(self, action: #selector(loadData), for: .valueChanged)
+        refresher.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         collectionView.addSubview(refresher)
     }
     
-    @objc func loadData() {
+    @objc func refreshData() {
         self.refresher.beginRefreshing()
         
         viewModel.refreshData()
@@ -52,5 +53,16 @@ class HomeViewController: BaseCollectionViewController {
                 self?.dataSource.updateData(data)
             }
             .store(in: &subscriptions)
+    }
+}
+
+extension HomeViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let section = dataSource.sectionIdentifier(atIndexPath: indexPath) else {
+            return
+        }
+        viewModel.itemDisplay(atSection: section, row: indexPath.row)
     }
 }

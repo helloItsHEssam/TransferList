@@ -27,6 +27,7 @@
 		DEFF1DCD2AF8F58500673B8C /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = DEFF1DCC2AF8F58500673B8C /* Kingfisher */; };
 		DEFF1DD02AF8F8BB00673B8C /* PaginationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFF1DCF2AF8F8BB00673B8C /* PaginationMode.swift */; };
 		DEFF1DD32AF8FF8100673B8C /* DataTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFF1DD22AF8FF8100673B8C /* DataTransfer.swift */; };
+		DEFF1DD52AF9122D00673B8C /* ViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFF1DD42AF9122D00673B8C /* ViewState.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +52,7 @@
 		DEFF1DC92AF8EC6A00673B8C /* VerticalAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalAccountCell.swift; sourceTree = "<group>"; };
 		DEFF1DCF2AF8F8BB00673B8C /* PaginationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationMode.swift; sourceTree = "<group>"; };
 		DEFF1DD22AF8FF8100673B8C /* DataTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTransfer.swift; sourceTree = "<group>"; };
+		DEFF1DD42AF9122D00673B8C /* ViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,6 +197,7 @@
 			children = (
 				DEFF1DC72AF8EAD300673B8C /* ViewModelFactory.swift */,
 				DEFF1DCF2AF8F8BB00673B8C /* PaginationMode.swift */,
+				DEFF1DD42AF9122D00673B8C /* ViewState.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -295,6 +298,7 @@
 				DE690EB12AF8455400E8C451 /* HomeViewController.swift in Sources */,
 				DEFF1DD02AF8F8BB00673B8C /* PaginationMode.swift in Sources */,
 				DE690EAA2AF842F800E8C451 /* DIContainer.swift in Sources */,
+				DEFF1DD52AF9122D00673B8C /* ViewState.swift in Sources */,
 				DEBE4AC32AF6C3B000A58501 /* AppDelegate.swift in Sources */,
 				DEBE4AC52AF6C3B000A58501 /* SceneDelegate.swift in Sources */,
 				DEFF1DC02AF8DFA500673B8C /* HomeCollectionViewDataSource.swift in Sources */,

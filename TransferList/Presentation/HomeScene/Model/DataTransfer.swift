@@ -18,12 +18,26 @@ struct DataTransfer<T> {
     var list: [T]
     var mode: Mode
     var section: HomeItem.Section
+    private(set) var listHolder: [T] = []
+        
+    init(list: [T], mode: Mode, section: HomeItem.Section) {
+        self.list = list
+        self.mode = mode
+        self.section = section
+        self.listHolder = list
+    }
     
     mutating func append(contentsOf items: [T]) {
         if mode == .append {
-            list.append(contentsOf: items)
+            listHolder.append(contentsOf: items)
         } else {
-            list = items
+            listHolder = items
         }
+
+        list = items
+    }
+    
+    func isLastItem(row: Int) -> Bool {
+        return listHolder.count - 1 == row
     }
 }

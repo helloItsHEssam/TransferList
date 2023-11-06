@@ -89,6 +89,17 @@ class HomeCollectionViewDataSource {
         
         dataSource.apply(snapShot, animatingDifferences: true)
     }
+    
+    public func sectionIdentifier(atIndexPath indexPath: IndexPath) -> HomeItem.Section? {
+        if #available(iOS 15.0, *) {
+            return dataSource.sectionIdentifier(for: indexPath.section)
+        } else {
+            guard let item = dataSource.itemIdentifier(for: indexPath) else {
+                return nil
+            }
+            return dataSource.snapshot().sectionIdentifier(containingItem: item)
+        }
+    }
 
 //    private func prepareToDecideShowTopicRowsBasedOn(topicCount count: Int, into snapShot: inout DiffableSnapshot) {
 //        let isContainTopicItems = snapShot.itemIdentifiers.contains(.topicsHeader)
