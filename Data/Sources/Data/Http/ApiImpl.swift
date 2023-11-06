@@ -39,7 +39,7 @@ final public class ApiImpl: Api {
                 continuation.resume(throwing: NetworkError.cannotConnectToServer)
                 return
             }
-            
+
             sessionManager.request(route)
                 .validate(statusCode: 200 ..< 300)
                 .responseData { [weak self] responseData in

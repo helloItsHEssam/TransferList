@@ -7,7 +7,7 @@
 
 import UIKit
 
-public class BaseCollectionCell: UICollectionViewCell, UISequenceIdentifier {
+open class BaseCollectionCell: UICollectionViewCell, UISequenceIdentifier {
 
     public override init(frame: CGRect) {
         super.init(frame: frame)

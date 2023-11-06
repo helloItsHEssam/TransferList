@@ -7,9 +7,9 @@
 
 import UIKit
 
-public class BaseViewController: UIViewController {
+open class BaseViewController: UIViewController {
 
-    var spaceSeparatorFromEdgeInList: CGFloat {
+    open var spaceSeparatorFromEdgeInList: CGFloat {
         return 16
     }
 

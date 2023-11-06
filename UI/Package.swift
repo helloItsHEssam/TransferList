@@ -24,8 +24,5 @@ let package = Package(
             dependencies: [],
             resources: [.process("Font/Resources"),
                         .process("Color/Resources")]),
-        .testTarget(
-            name: "UITests",
-            dependencies: ["UI"]),
     ]
 )

@@ -7,9 +7,9 @@
 
 import UIKit
 
-class SubTitleLabel: BaseLabel {
+public class SubTitleLabel: BaseLabel {
 
-    override func setupViews() {
+    public override func setupViews() {
         self.font = Raleway.regular.customFont(basedOnTextStyle: .caption2)
 
         textColor = Theme.secondrayText

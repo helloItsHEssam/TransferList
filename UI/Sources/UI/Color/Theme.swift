@@ -9,11 +9,18 @@ import UIKit
 
 public class Theme {
     
-    static let background = UIColor(named: "background")
-    static let supplementaryBackground = UIColor(named: "supplementary background")
-    static let blue = UIColor(named: "blue")
-    static let border = UIColor(named: "border")
-    static let divider = UIColor(named: "divider")
-    static let primaryText = UIColor(named: "primary text")
-    static let secondrayText = UIColor(named: "secondray text")
+    public static let background = UIColor(named: "background", in: Bundle.module
+                                           , compatibleWith: nil)
+    public static let supplementaryBackground = UIColor(named: "supplementary background",
+                                                        in: Bundle.module, compatibleWith: nil)
+    public static let blue = UIColor(named: "blue",
+                                     in: Bundle.module, compatibleWith: nil)
+    public static let border = UIColor(named: "border",
+                                       in: Bundle.module, compatibleWith: nil)
+    public static let divider = UIColor(named: "divider",
+                                        in: Bundle.module, compatibleWith: nil)
+    public static let primaryText = UIColor(named: "primary text",
+                                            in: Bundle.module, compatibleWith: nil)
+    public static let secondrayText = UIColor(named: "secondray text",
+                                              in: Bundle.module, compatibleWith: nil)
 }

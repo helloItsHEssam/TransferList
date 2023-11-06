@@ -15,7 +15,7 @@ public enum PersonBankAccountError: Error {
     case cannotFetchFavoritePersonAccounts
     case unexpectedError
     
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .cannotSavePersonAccountToFavorites:
             return "Failed to save person accounts to favorites"
