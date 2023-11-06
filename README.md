@@ -42,7 +42,7 @@ For more detailed information about each module, you can refer to the following 
 [Domain](Domain/README.md)
 <br>
 <br>
-[UI](MediaListUIKit/README.md)
+[UI](UI/README.md)
 
 ## Clean Architecture + MVVM
 
