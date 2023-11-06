@@ -60,15 +60,14 @@ class DetailAccountViewConroller: BaseCollectionViewController {
     }
     
     private func observeDidChangeData() {
-        viewModel.$viewState
-            .compactMap { $0 }
+        viewModel.errorForSavingOrRemoving
             .drop(while: {
                 $0 == .loading || $0 == .result
             })
             .compactMap { String(describing: $0) }
             .sink { [weak self] errorMessage in
                 guard let self else { return }
-                print(errorMessage)
+                self.showAlert(title: "Error", message: errorMessage)
             }
             .store(in: &subscriptions)
         

@@ -53,15 +53,14 @@ class HomeViewController: BaseCollectionViewController {
     }
     
     private func observeDidChangeData() {
-        viewModel.$dataUpdated
-            .compactMap { $0 }
+        viewModel.dataUpdated
             .sink { [weak self] data in
                 self?.refresher.endRefreshing()
                 self?.dataSource.updateData(data)
             }
             .store(in: &subscriptions)
         
-        viewModel.$changeView
+        viewModel.changeView
             .compactMap { $0 }
             .sink { [weak self] route in
                 guard case let .detail(account) = route else {
@@ -75,6 +74,18 @@ class HomeViewController: BaseCollectionViewController {
             .sink { [weak self] account in
                 self?.dataSource.updateAccount(account: account)
             }.store(in: &subscriptions)
+        
+        viewModel.$viewState
+            .compactMap { $0 }
+            .drop(while: {
+                $0 == .loading || $0 == .result
+            })
+            .compactMap { String(describing: $0) }
+            .sink { [weak self] errorMessage in
+                guard let self else { return }
+                self.showAlert(title: "Error", message: errorMessage)
+            }
+            .store(in: &subscriptions)
     }
     
     private func navigateToDetailViewController(withAccount account: PersonBankAccount) {

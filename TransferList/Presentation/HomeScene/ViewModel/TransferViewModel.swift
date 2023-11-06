@@ -12,8 +12,9 @@ import Domain
 class TransferViewModel {
     
     @Published var viewState: ViewState!
-    @Published var dataUpdated: DataTransfer<PersonBankAccount>!
-    @Published var changeView: Router!
+    var dataUpdated = PassthroughSubject<DataTransfer<PersonBankAccount>, Never>()
+    var errorForSavingOrRemoving = PassthroughSubject<ViewState, Never>()
+    var changeView = PassthroughSubject<Router, Never>()
     var favoriteStatusUpdated = PassthroughSubject<PersonBankAccount, Never>()
     private let useCase: PersonBankAccountUseCase
     private var subscriptions = Set<AnyCancellable>()
@@ -49,7 +50,7 @@ class TransferViewModel {
             dataFromServer.append(contentsOf: accounts)
         }
         
-        dataUpdated = dataFromServer
+        dataUpdated.send(dataFromServer)
     }
     
     public func fetchFavoriteList() {
@@ -61,7 +62,7 @@ class TransferViewModel {
                 self.dataFromLocal = .init(list: accounts,
                                            mode: .initial,
                                            section: .favoriteBankAcconts)
-                self.dataUpdated = self.dataFromLocal
+                self.dataUpdated.send(self.dataFromLocal)
             })
             .store(in: &subscriptions)
     }
@@ -78,7 +79,7 @@ class TransferViewModel {
                 case .finished: break
                     
                 case .failure(let error):
-                    updateViewState(newState: .error(message: error.localizedDescription))
+                    self.updateViewState(newState: .error(message: error.errorDescription ?? "Unexpected error"))
                     break
                 }
                 
@@ -86,7 +87,7 @@ class TransferViewModel {
                 guard let self else { return }
                 self.updateAccounts(appendAccounts: accounts)
                 self.paginationMode.moveToNextOffset()
-                updateViewState(newState: .result)
+                self.updateViewState(newState: .result)
             }
             .store(in: &subscriptions)
     }
@@ -111,7 +112,7 @@ class TransferViewModel {
     }
     
     public func accountSelected(_ account: PersonBankAccount) {
-        changeView = .detail(account: account)
+        changeView.send(.detail(account: account))
     }
     
     public func removeFromFavorite(account: PersonBankAccount) {
@@ -123,7 +124,8 @@ class TransferViewModel {
                 switch completion {
                 case .finished: break
                 case .failure(let error):
-                    self.updateViewState(newState: .error(message: error.localizedDescription))
+                    let viewError = ViewState.error(message: error.errorDescription ?? "Unexpected error")
+                    self.errorForSavingOrRemoving.send(viewError)
                     break
                 }
                 
@@ -141,11 +143,12 @@ class TransferViewModel {
                 switch completion {
                 case .finished: break
                 case .failure(let error):
-                    self.updateViewState(newState: .error(message: error.localizedDescription))
+                    let viewError = ViewState.error(message: error.errorDescription ?? "Unexpected error")
+                    self.errorForSavingOrRemoving.send(viewError)
                     break
                 }
                 
-            } receiveValue: { [weak self] account in                
+            } receiveValue: { [weak self] account in
                 self?.favoriteStatusUpdated.send(account)
             }.store(in: &subscriptions)
     }
