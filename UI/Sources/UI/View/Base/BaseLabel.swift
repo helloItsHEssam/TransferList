@@ -7,7 +7,7 @@
 
 import UIKit
 
-public class BaseLabel: UILabel {
+open class BaseLabel: UILabel {
 
     public required init?(coder: NSCoder) {
         super.init(coder: coder)

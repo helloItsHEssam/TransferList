@@ -7,7 +7,7 @@
 
 import UIKit
 
-public class BaseControl: UIControl {
+open class BaseControl: UIControl {
 
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
