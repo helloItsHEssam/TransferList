@@ -10,7 +10,7 @@ import UIKit
 open class BaseCollectionViewController: BaseViewController,
                                          BorderCompositionalLayoutDelegate {
 
-    private(set) lazy var collectionView: BaseCollectionView = {
+    public private(set) lazy var collectionView: BaseCollectionView = {
         BaseCollectionView(frame: .zero, collectionViewLayout: createBorderLayout())
     }()
 

@@ -10,15 +10,16 @@ import UI
 
 class HomeViewController: BaseCollectionViewController {
 
-    @InstantiateView(type: TitleLabel.self) private var titleLabel
+    private var dataSource: HomeCollectionViewDataSource!
 
     override func setupViews() {
-        
-        titleLabel.text = "Hello Blu!"
-        view.addSubview(titleLabel)
-        NSLayoutConstraint.activate([
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXSafeMargin),
-            titleLabel.centerYAnchor.constraint(equalTo: view.centerYSafeMargin),
-        ])
+        super.setupViews()
+                
+        configureDataSource()
+        dataSource.LoadTitle(message: "Favorites")
+    }
+    
+    private func configureDataSource() {
+        dataSource = .init(collectionView: collectionView)
     }
 }
