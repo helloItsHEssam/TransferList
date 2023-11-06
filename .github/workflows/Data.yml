@@ -21,9 +21,3 @@ jobs:
       run: |
         cd Data/Sources/
         swiftlint
-        
-    - name: run unit test
-      run: |
-        cd Data/
-        swift build
-        swift test

@@ -23,9 +23,11 @@ enum DetailItem: Hashable {
     func hash(into hasher: inout Hasher) {
         switch self {
         case .header(let title): hasher.combine(title)
+            
         case .information(let title, let value):
             hasher.combine(title)
             hasher.combine(value)
+            
         case .addRemoveFavorite(let isFavorite):
             hasher.combine(isFavorite)
             hasher.combine("addRmoveFavorite")

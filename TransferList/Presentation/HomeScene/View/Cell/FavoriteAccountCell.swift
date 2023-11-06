@@ -21,7 +21,9 @@ class FavoriteAccountCell: AccountCell {
             stackView.leadingAnchor.constraint(equalTo: leadingSafeMargin),
             stackView.trailingAnchor.constraint(equalTo: trailingSafeMargin),
             stackView.bottomAnchor.constraint(equalTo: bottomSafeMargin),
-            stackView.topAnchor.constraint(equalTo: topSafeMargin)
+            stackView.topAnchor.constraint(equalTo: topSafeMargin),
+            nameLabel.widthAnchor.constraint(equalToConstant: 100),
+            cardTypeLabel.widthAnchor.constraint(equalToConstant: 100)
         ])
         
         configureStackView()
@@ -45,7 +47,10 @@ class FavoriteAccountCell: AccountCell {
     private func configureLabels() {
         nameLabel.textAlignment = .center
         nameLabel.numberOfLines = 1
+        nameLabel.minimumScaleFactor = 0.5
+        
         cardTypeLabel.textAlignment = .center
         cardTypeLabel.numberOfLines = 1
+        cardTypeLabel.minimumScaleFactor = 0.5
     }
 }

@@ -12,9 +12,9 @@ import Domain
 class TransferViewModel {
     
     @Published var viewState: ViewState!
-    var dataUpdated = PassthroughSubject<DataTransfer<PersonBankAccount>, Never>()
+    var accountsNeedToShow = PassthroughSubject<DataTransfer<PersonBankAccount>, Never>()
     var errorForSavingOrRemoving = PassthroughSubject<ViewState, Never>()
-    var changeView = PassthroughSubject<Router, Never>()
+    var router = PassthroughSubject<Router, Never>()
     var favoriteStatusUpdated = PassthroughSubject<PersonBankAccount, Never>()
     private let useCase: PersonBankAccountUseCase
     private var subscriptions = Set<AnyCancellable>()
@@ -38,7 +38,7 @@ class TransferViewModel {
         self.viewState = viewState
     }
     
-    private func updateAccounts(appendAccounts accounts: [PersonBankAccount]) {
+    private func updateAllAccounts(appendAccounts accounts: [PersonBankAccount]) {
         guard !accounts.isEmpty else {
             paginationMode.mode = .reachedToEnd
             return
@@ -50,7 +50,7 @@ class TransferViewModel {
             dataFromServer.append(contentsOf: accounts)
         }
         
-        dataUpdated.send(dataFromServer)
+        accountsNeedToShow.send(dataFromServer)
     }
     
     public func fetchFavoriteList() {
@@ -62,7 +62,7 @@ class TransferViewModel {
                 self.dataFromLocal = .init(list: accounts,
                                            mode: .initial,
                                            section: .favoriteBankAcconts)
-                self.dataUpdated.send(self.dataFromLocal)
+                self.accountsNeedToShow.send(self.dataFromLocal)
             })
             .store(in: &subscriptions)
     }
@@ -85,14 +85,14 @@ class TransferViewModel {
                 
             } receiveValue: { [weak self] accounts in
                 guard let self else { return }
-                self.updateAccounts(appendAccounts: accounts)
+                self.updateAllAccounts(appendAccounts: accounts)
                 self.paginationMode.moveToNextOffset()
                 self.updateViewState(newState: .result)
             }
             .store(in: &subscriptions)
     }
     
-    public func refreshData() {
+    public func refreshList() {
         guard viewState != .loading else { return }
         
         paginationMode.reset()
@@ -100,7 +100,7 @@ class TransferViewModel {
         fetchTransferList()
     }
     
-    public func itemDisplay(atSection section: HomeItem.Section, row: Int) {
+    public func reachedToRow(row: Int, atSection section: HomeItem.Section) {
         guard viewState != .loading else { return }
         guard section == .personBankAccounts else { return }
         guard paginationMode.mode == .continues else { return }
@@ -112,44 +112,35 @@ class TransferViewModel {
     }
     
     public func accountSelected(_ account: PersonBankAccount) {
-        changeView.send(.detail(account: account))
+        router.send(.detail(account: account))
+    }
+    
+    private func updateFavorite(publisher: AnyPublisher<PersonBankAccount, PersonBankAccountError>) {
+        publisher
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] completion in
+            guard let self else { return }
+            
+            switch completion {
+            case .finished: break
+            case .failure(let error):
+                let viewError = ViewState.error(message: error.errorDescription ?? "Unexpected error")
+                self.errorForSavingOrRemoving.send(viewError)
+                break
+            }
+            
+        } receiveValue: { [weak self] account in
+            self?.favoriteStatusUpdated.send(account)
+        }.store(in: &subscriptions)
     }
     
     public func removeFromFavorite(account: PersonBankAccount) {
-        useCase.removePersonAccountFromFavorites(account)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                guard let self else { return }
-                
-                switch completion {
-                case .finished: break
-                case .failure(let error):
-                    let viewError = ViewState.error(message: error.errorDescription ?? "Unexpected error")
-                    self.errorForSavingOrRemoving.send(viewError)
-                    break
-                }
-                
-            } receiveValue: { [weak self] account in
-                self?.favoriteStatusUpdated.send(account)
-            }.store(in: &subscriptions)
+        let publisher = useCase.removePersonAccountFromFavorites(account)
+        updateFavorite(publisher: publisher)
     }
     
     public func saveToFavorite(account: PersonBankAccount) {
-        useCase.savePersonAccountToFavorites(account)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                guard let self else { return }
-                
-                switch completion {
-                case .finished: break
-                case .failure(let error):
-                    let viewError = ViewState.error(message: error.errorDescription ?? "Unexpected error")
-                    self.errorForSavingOrRemoving.send(viewError)
-                    break
-                }
-                
-            } receiveValue: { [weak self] account in
-                self?.favoriteStatusUpdated.send(account)
-            }.store(in: &subscriptions)
+        let publisher = useCase.savePersonAccountToFavorites(account)
+        updateFavorite(publisher: publisher)
     }
 }

@@ -1,5 +1,5 @@
 //
-//  TitleValueCell.swift
+//  TitleAndContentCell.swift
 //  TransferList
 //
 //  Created by Hessam Mahdiabadi on 11/6/23.
@@ -8,7 +8,7 @@
 import UIKit
 import UI
 
-class TitleValueCell: BaseCollectionCell {
+class TitleAndContentCell: BaseCollectionCell {
 
     @InstantiateView(type: ListLabel.self) var titleLabel
     @InstantiateView(type: SubTitleLabel.self) var valueLabel

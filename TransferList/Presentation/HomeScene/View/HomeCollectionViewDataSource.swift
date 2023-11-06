@@ -66,7 +66,7 @@ class HomeCollectionViewDataSource {
         }
     }
     
-    public func updateData(_ dataTransfer: DataTransfer<PersonBankAccount>) {
+    public func updateList(_ dataTransfer: DataTransfer<PersonBankAccount>) {
         semaphore.wait()
         
         var snapshot: DiffableSnapshot!
@@ -84,10 +84,10 @@ class HomeCollectionViewDataSource {
     private func updateFavoriteSection(_ dataTransfer: DataTransfer<PersonBankAccount>) -> DiffableSnapshot {
         var snapshot = dataSource.snapshot()
         
+        guard !dataTransfer.list.isEmpty else { return snapshot }
         let items = dataTransfer.list.map {
             return HomeItem.favoriteBankAccount(account: $0)
         }
-        guard !items.isEmpty else { return snapshot }
         
         let newSections = [.FavoritesTitle, dataTransfer.section]
         let firstSection = snapshot.sectionIdentifiers.first
@@ -140,13 +140,6 @@ class HomeCollectionViewDataSource {
         return dataSource.snapshot().sectionIdentifiers[section]
     }
     
-    public func sectionIdentifier(atIndexPath indexPath: IndexPath) -> HomeItem.Section? {
-        guard let item = dataSource.itemIdentifier(for: indexPath) else {
-            return nil
-        }
-        return dataSource.snapshot().sectionIdentifier(containingItem: item)
-    }
-    
     public func getAccount(at indexPath: IndexPath) -> PersonBankAccount? {
         guard let homeItem = dataSource.itemIdentifier(for: indexPath) else {
             return nil
@@ -161,37 +154,36 @@ class HomeCollectionViewDataSource {
         }
     }
     
-    public func updateAccount(account: PersonBankAccount) {
-        var snapshot: DiffableSnapshot
-        var fakeAccount = account
+    public func updateAccountToFavorites(account: PersonBankAccount) {
+        var accountNeedsToRemove = account
+        var snapshot = updateFavoriteSection(.init(list: [account],
+                                        mode: .append,
+                                        section: .favoriteBankAcconts))
         
-        if account.isFavorite {
-            // favorite
-            snapshot = updateFavoriteSection(.init(list: [account],
-                                            mode: .append,
-                                            section: .favoriteBankAcconts))
-            
-            // all
-            fakeAccount.update(favoriteStatus: false)
-            let fakeItem = HomeItem.personBankAccount(account: fakeAccount)
-            let item = HomeItem.personBankAccount(account: account)
-            snapshot.insertItems([item], beforeItem: fakeItem)
-            snapshot.deleteItems([fakeItem])
-
-        } else {
-            snapshot = dataSource.snapshot()
-            fakeAccount.update(favoriteStatus: true)
-            
-            let favItem = HomeItem.favoriteBankAccount(account: fakeAccount)
-            let fakeItem = HomeItem.personBankAccount(account: fakeAccount)
-            
-            let item = HomeItem.personBankAccount(account: account)
-            snapshot.insertItems([item], beforeItem: fakeItem)
-            snapshot.deleteItems([fakeItem, favItem])
-            
-            if snapshot.itemIdentifiers(inSection: .favoriteBankAcconts).isEmpty {
-                snapshot.deleteSections([.FavoritesTitle, .favoriteBankAcconts])
-            }
+        // all
+        accountNeedsToRemove.update(favoriteStatus: false)
+        let itemNeedsToRemove = HomeItem.personBankAccount(account: accountNeedsToRemove)
+        let item = HomeItem.personBankAccount(account: account)
+        snapshot.insertItems([item], beforeItem: itemNeedsToRemove)
+        snapshot.deleteItems([itemNeedsToRemove])
+        
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    public func removeAccountfromFavorites(account: PersonBankAccount) {
+        var fakeAccount = account
+        var snapshot = dataSource.snapshot()
+        fakeAccount.update(favoriteStatus: true)
+        
+        let favItem = HomeItem.favoriteBankAccount(account: fakeAccount)
+        let fakeItem = HomeItem.personBankAccount(account: fakeAccount)
+        
+        let item = HomeItem.personBankAccount(account: account)
+        snapshot.insertItems([item], beforeItem: fakeItem)
+        snapshot.deleteItems([fakeItem, favItem])
+        
+        if snapshot.itemIdentifiers(inSection: .favoriteBankAcconts).isEmpty {
+            snapshot.deleteSections([.FavoritesTitle, .favoriteBankAcconts])
         }
         
         dataSource.apply(snapshot, animatingDifferences: true)

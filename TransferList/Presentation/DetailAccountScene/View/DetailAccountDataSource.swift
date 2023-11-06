@@ -25,7 +25,7 @@ class DetailAccountDataSource {
     }
     
     private func configureCollectionView() {
-        collectionView.registerReusableCell(type: TitleValueCell.self)
+        collectionView.registerReusableCell(type: TitleAndContentCell.self)
         collectionView.registerReusableCell(type: HeaderInformationCell.self)
         collectionView.registerReusableCell(type: AddRemoveFavoriteCell.self)
     }
@@ -52,8 +52,8 @@ class DetailAccountDataSource {
         return cell
     }
     
-    private func createValueCell(for indexPath: IndexPath, title: String, value: Int) -> TitleValueCell {
-        let cell: TitleValueCell = collectionView.dequeueReusableCell(for: indexPath)
+    private func createValueCell(for indexPath: IndexPath, title: String, value: Int) -> TitleAndContentCell {
+        let cell: TitleAndContentCell = collectionView.dequeueReusableCell(for: indexPath)
         cell.set(title: title, value: value)
         return cell
     }
@@ -85,22 +85,16 @@ class DetailAccountDataSource {
     }
     
     public func updateFavoriteStatus(isFavorite: Bool) {
-        let indexPath = IndexPath(row: 2, section: 1)
-        guard let oldItem = dataSource.itemIdentifier(for: indexPath) else { return }
-        let addRemove = DetailItem.addRemoveFavorite(isFavorite: isFavorite)
-        
         var newSnapShot = dataSource.snapshot()
-        newSnapShot.deleteItems([oldItem])
-        newSnapShot.appendItems([addRemove], toSection: .information)
+        
+        let newItem = DetailItem.addRemoveFavorite(isFavorite: isFavorite)
+        newSnapShot.deleteItems([.addRemoveFavorite(isFavorite: !isFavorite)])
+        newSnapShot.appendItems([newItem], toSection: .information)
         
         dataSource.apply(newSnapShot, animatingDifferences: true)
     }
     
     public func getItem(at indexPath: IndexPath) -> DetailItem? {
-        guard let detailItem = dataSource.itemIdentifier(for: indexPath) else {
-            return nil
-        }
-        
-        return detailItem
+        dataSource.itemIdentifier(for: indexPath)
     }
 }

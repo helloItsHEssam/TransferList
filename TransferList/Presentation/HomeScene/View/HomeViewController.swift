@@ -36,16 +36,15 @@ class HomeViewController: BaseCollectionViewController {
     }
     
     private func configureRefresher() {
-        collectionView.alwaysBounceVertical = true
         refresher.tintColor = Theme.supplementaryBackground
-        refresher.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        refresher.addTarget(self, action: #selector(beginRefreshing), for: .valueChanged)
         collectionView.addSubview(refresher)
     }
     
-    @objc func refreshData() {
+    @objc private func beginRefreshing() {
         self.refresher.beginRefreshing()
         
-        viewModel.refreshData()
+        viewModel.refreshList()
     }
     
     private func configureDataSource() {
@@ -53,14 +52,14 @@ class HomeViewController: BaseCollectionViewController {
     }
     
     private func observeDidChangeData() {
-        viewModel.dataUpdated
-            .sink { [weak self] data in
+        viewModel.accountsNeedToShow
+            .sink { [weak self] accounts in
                 self?.refresher.endRefreshing()
-                self?.dataSource.updateData(data)
+                self?.dataSource.updateList(accounts)
             }
             .store(in: &subscriptions)
         
-        viewModel.changeView
+        viewModel.router
             .compactMap { $0 }
             .sink { [weak self] route in
                 guard case let .detail(account) = route else {
@@ -71,8 +70,17 @@ class HomeViewController: BaseCollectionViewController {
             .store(in: &subscriptions)
         
         viewModel.favoriteStatusUpdated
+            .share()
+            .filter { $0.isFavorite }
             .sink { [weak self] account in
-                self?.dataSource.updateAccount(account: account)
+                self?.dataSource.updateAccountToFavorites(account: account)
+            }.store(in: &subscriptions)
+        
+        viewModel.favoriteStatusUpdated
+            .share()
+            .filter { !$0.isFavorite }
+            .sink { [weak self] account in
+                self?.dataSource.removeAccountfromFavorites(account: account)
             }.store(in: &subscriptions)
         
         viewModel.$viewState
@@ -126,10 +134,9 @@ extension HomeViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView,
                         willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let section = dataSource.sectionIdentifier(atIndexPath: indexPath) else {
+        guard let section = dataSource.sectionIdentifier(atSection: indexPath.section) else {
             return
         }
-        viewModel.itemDisplay(atSection: section, row: indexPath.row)
+        viewModel.reachedToRow(row: indexPath.row, atSection: section)
     }
 }
-
