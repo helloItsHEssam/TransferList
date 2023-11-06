@@ -52,6 +52,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func startApp(windowScene scene: UIWindowScene) {
         let window = UIWindow(windowScene: scene)
         
+        setupDIContainer()
         registerFonts()
         
         let navController = createNavigationController()
@@ -81,7 +82,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     private func setupDIContainer() {
-//        let container = DIContainerImpl()
-//        ViewModelFactory.shared.register(DIContainer: container)
+        let container = DIContainerImpl()
+        ViewModelFactory.shared.register(DIContainer: container)
     }
 }

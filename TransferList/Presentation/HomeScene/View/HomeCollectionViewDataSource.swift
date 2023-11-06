@@ -7,6 +7,7 @@
 
 import UIKit
 import UI
+import Domain
 
 class HomeCollectionViewDataSource {
     private typealias DiffableDataSource = UICollectionViewDiffableDataSource<HomeItem.Section, HomeItem>
@@ -21,10 +22,12 @@ class HomeCollectionViewDataSource {
         
         configureCollectionView()
         configureDiffableDataSource()
+        setupDiffableSnapshot()
     }
     
     private func configureCollectionView() {
         collectionView.registerReusableCell(type: LargeHeaderCell.self)
+        collectionView.registerReusableCell(type: VerticalAccountCell.self)        
     }
 
     private func configureDiffableDataSource() {
@@ -33,15 +36,30 @@ class HomeCollectionViewDataSource {
             switch itemIdentifier {
             case .header(let title):
                 return self?.createTitleCell(for: indexPath, title: title)
+            case .personBankAccount(let account):
+                return self?.createVerticalAccount(for: indexPath, account: account)
             }
         })
 
         self.dataSource.supplementaryViewProvider = collectionView.makeSeprator()
     }
     
+    private func setupDiffableSnapshot() {
+        var initialSnapshot = DiffableSnapshot()
+        initialSnapshot.appendSections([.allTitle, .personBankAccounts])
+        initialSnapshot.appendItems([.header(title: "All")], toSection: .allTitle)
+        self.dataSource.apply(initialSnapshot, animatingDifferences: false)
+    }
+    
     private func createTitleCell(for indexPath: IndexPath, title: String) -> LargeHeaderCell {
         let cell: LargeHeaderCell = collectionView.dequeueReusableCell(for: indexPath)
         cell.setTitle(title)
+        return cell
+    }
+    
+    private func createVerticalAccount(for indexPath: IndexPath, account: PersonBankAccount) -> VerticalAccountCell {
+        let cell: VerticalAccountCell = collectionView.dequeueReusableCell(for: indexPath)
+        cell.setAccountItem(account)
         return cell
     }
     
@@ -51,16 +69,15 @@ class HomeCollectionViewDataSource {
         snapShot.appendItems([.header(title: message)], toSection: .FavoritesTitle)
         dataSource.apply(snapShot, animatingDifferences: true)
     }
-//    private func initDataSource(_ items: [UISection]) {
-//        var initialSnapshot = DiffableSnapshot()
-//        let sections = items.map { $0.section }
-//        initialSnapshot.appendSections(sections)
-//
-//        for item in items {
-//            initialSnapshot.appendItems(item.items, toSection: item.section)
-//        }
-//        self.dataSource.apply(initialSnapshot, animatingDifferences: true)
-//    }
+    
+    public func updateAccounts(_ accounts: [PersonBankAccount]) {
+        var snapShot = dataSource.snapshot()
+        let items = accounts.map {
+            return HomeItem.personBankAccount(account: $0)
+        }
+        snapShot.appendItems(items, toSection: .personBankAccounts)
+        dataSource.apply(snapShot, animatingDifferences: true)
+    }
 
 //    private func prepareToDecideShowTopicRowsBasedOn(topicCount count: Int, into snapShot: inout DiffableSnapshot) {
 //        let isContainTopicItems = snapShot.itemIdentifiers.contains(.topicsHeader)

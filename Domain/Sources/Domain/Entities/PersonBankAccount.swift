@@ -7,8 +7,8 @@
 
 import Foundation
 
-public struct PersonBankAccount: Identifiable {
-    
+public struct PersonBankAccount: Identifiable, Hashable {
+
     public var id: String {
         card?.cardNumber ?? UUID().uuidString
     }
@@ -35,5 +35,13 @@ public struct PersonBankAccount: Identifiable {
     
     mutating func update(indexAtList index: Int) {
         self.indexAtList = index
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    public static func == (lhs: PersonBankAccount, rhs: PersonBankAccount) -> Bool {
+        lhs.id == rhs.id
     }
 }
