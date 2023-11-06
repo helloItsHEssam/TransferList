@@ -36,6 +36,7 @@
 		DEFF1DE72AF9366900673B8C /* TitleValueCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFF1DE62AF9366900673B8C /* TitleValueCell.swift */; };
 		DEFF1DEA2AF93B1200673B8C /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFF1DE92AF93B1200673B8C /* Router.swift */; };
 		DEFF1DEC2AF93E2F00673B8C /* HeaderInformationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFF1DEB2AF93E2F00673B8C /* HeaderInformationCell.swift */; };
+		DEFF1DEE2AF949FC00673B8C /* AddRemoveFavoriteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFF1DED2AF949FC00673B8C /* AddRemoveFavoriteCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -69,6 +70,7 @@
 		DEFF1DE62AF9366900673B8C /* TitleValueCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleValueCell.swift; sourceTree = "<group>"; };
 		DEFF1DE92AF93B1200673B8C /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		DEFF1DEB2AF93E2F00673B8C /* HeaderInformationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderInformationCell.swift; sourceTree = "<group>"; };
+		DEFF1DED2AF949FC00673B8C /* AddRemoveFavoriteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRemoveFavoriteCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -262,6 +264,7 @@
 			children = (
 				DEFF1DE62AF9366900673B8C /* TitleValueCell.swift */,
 				DEFF1DEB2AF93E2F00673B8C /* HeaderInformationCell.swift */,
+				DEFF1DED2AF949FC00673B8C /* AddRemoveFavoriteCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -359,6 +362,7 @@
 				DE690EAA2AF842F800E8C451 /* DIContainer.swift in Sources */,
 				DEFF1DEA2AF93B1200673B8C /* Router.swift in Sources */,
 				DEFF1DE12AF9356200673B8C /* DetailAccountDataSource.swift in Sources */,
+				DEFF1DEE2AF949FC00673B8C /* AddRemoveFavoriteCell.swift in Sources */,
 				DEFF1DD52AF9122D00673B8C /* ViewState.swift in Sources */,
 				DEFF1DD92AF92DB500673B8C /* AccountCell.swift in Sources */,
 				DEBE4AC32AF6C3B000A58501 /* AppDelegate.swift in Sources */,

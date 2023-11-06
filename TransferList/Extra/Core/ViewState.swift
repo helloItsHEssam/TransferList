@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ViewState: Hashable, Equatable {
+enum ViewState: Hashable, Equatable, CustomStringConvertible {
     
     case loading
     case result
@@ -18,6 +18,14 @@ enum ViewState: Hashable, Equatable {
         case .error: hasher.combine("error")
         case .result: hasher.combine("result")
         case .loading: hasher.combine("loading")
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .error(let message): return message
+        case .result: return "result"
+        case .loading: return "loading"
         }
     }
     

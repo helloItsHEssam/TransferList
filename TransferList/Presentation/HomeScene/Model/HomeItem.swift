@@ -19,14 +19,19 @@ enum HomeItem: Hashable {
     }
 
     case header(title: String)
+    case favoriteBankAccount(account: PersonBankAccount)
     case personBankAccount(account: PersonBankAccount)
 
     func hash(into hasher: inout Hasher) {
         switch self {
         case .header(let title): hasher.combine(title)
+        case .favoriteBankAccount(let account):
+            hasher.combine("favorite")
+            hasher.combine(account)
         case .personBankAccount(let account):
             hasher.combine("accounts")
             hasher.combine(account)
+            hasher.combine(account.isFavorite)
         }
     }
 

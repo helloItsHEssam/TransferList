@@ -70,6 +70,11 @@ class HomeViewController: BaseCollectionViewController {
                 self?.navigateToDetailViewController(withAccount: account)
             }
             .store(in: &subscriptions)
+        
+        viewModel.favoriteStatusUpdated
+            .sink { [weak self] account in
+                self?.dataSource.updateAccount(account: account)
+            }.store(in: &subscriptions)
     }
     
     private func navigateToDetailViewController(withAccount account: PersonBankAccount) {
@@ -86,9 +91,9 @@ class HomeViewController: BaseCollectionViewController {
         }
 
         let itemSize = NSCollectionLayoutSize(widthDimension: .estimated(80),
-                                              heightDimension: .estimated(80))
+                                              heightDimension: .absolute(100))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        item.edgeSpacing = .init(leading: .fixed(18), top: nil, trailing: nil, bottom: nil)
+        item.edgeSpacing = .init(leading: .fixed(10), top: nil, trailing: nil, bottom: nil)
 
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize, subitems: [item])
 
@@ -116,3 +121,4 @@ extension HomeViewController: UICollectionViewDelegate {
         viewModel.itemDisplay(atSection: section, row: indexPath.row)
     }
 }
+

@@ -27,6 +27,7 @@ class DetailAccountDataSource {
     private func configureCollectionView() {
         collectionView.registerReusableCell(type: TitleValueCell.self)
         collectionView.registerReusableCell(type: HeaderInformationCell.self)
+        collectionView.registerReusableCell(type: AddRemoveFavoriteCell.self)
     }
 
     private func configureDiffableDataSource() {
@@ -37,6 +38,8 @@ class DetailAccountDataSource {
                 return self?.createValueCell(for: indexPath, title: title, value: value)
             case .header(let title):
                 return self?.createHeaderCell(for: indexPath, title: title)
+            case .addRemoveFavorite(let isFavorite):
+                return self?.createAddRemoveFavorite(for: indexPath, isFavorite: isFavorite)
             }
         })
 
@@ -55,19 +58,49 @@ class DetailAccountDataSource {
         return cell
     }
     
-    public func showInformation(_ cardInformation: CardTransferCount?) {
+    private func createAddRemoveFavorite(for indexPath: IndexPath,
+                                         isFavorite: Bool) -> AddRemoveFavoriteCell {
+        let cell: AddRemoveFavoriteCell = collectionView.dequeueReusableCell(for: indexPath)
+        cell.setFavoriteStatus(isFavorite: isFavorite)
+        return cell
+    }
+    
+    public func showInformation(_ account: PersonBankAccount) {
         var initialSnapshot = dataSource.snapshot()
         
         initialSnapshot.appendSections([.title, .information])
         let header = DetailItem.header(title: "More information")
         initialSnapshot.appendItems([header], toSection: .title)
         
+        let cardInformation = account.cardTransferCount
         let total = DetailItem.information(title: "Total transfer",
                                                    value: cardInformation?.totalTransfer ?? 0)
         let numberOfTrans = DetailItem.information(title: "Number of transfers",
                                                    value: cardInformation?.numberOfTransfers ?? 0)
-        initialSnapshot.appendItems([total, numberOfTrans], toSection: .information)
+        let addRemove = DetailItem.addRemoveFavorite(isFavorite: account.isFavorite)
+        
+        initialSnapshot.appendItems([total, numberOfTrans, addRemove], toSection: .information)
         
         dataSource.apply(initialSnapshot, animatingDifferences: false)
+    }
+    
+    public func updateFavoriteStatus(isFavorite: Bool) {
+        let indexPath = IndexPath(row: 2, section: 1)
+        guard let oldItem = dataSource.itemIdentifier(for: indexPath) else { return }
+        let addRemove = DetailItem.addRemoveFavorite(isFavorite: isFavorite)
+        
+        var newSnapShot = dataSource.snapshot()
+        newSnapShot.deleteItems([oldItem])
+        newSnapShot.appendItems([addRemove], toSection: .information)
+        
+        dataSource.apply(newSnapShot, animatingDifferences: true)
+    }
+    
+    public func getItem(at indexPath: IndexPath) -> DetailItem? {
+        guard let detailItem = dataSource.itemIdentifier(for: indexPath) else {
+            return nil
+        }
+        
+        return detailItem
     }
 }

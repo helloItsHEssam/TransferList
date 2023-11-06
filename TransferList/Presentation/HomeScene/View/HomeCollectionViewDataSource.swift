@@ -37,7 +37,8 @@ class HomeCollectionViewDataSource {
             switch itemIdentifier {
             case .header(let title):
                 return self?.createTitleCell(for: indexPath, title: title)
-            case .personBankAccount(let account):
+            case .personBankAccount(let account),
+                    .favoriteBankAccount(let account):
                 return self?.createAccountCell(for: indexPath, account: account)
             }
         })
@@ -84,7 +85,7 @@ class HomeCollectionViewDataSource {
         var snapshot = dataSource.snapshot()
         
         let items = dataTransfer.list.map {
-            return HomeItem.personBankAccount(account: $0)
+            return HomeItem.favoriteBankAccount(account: $0)
         }
         guard !items.isEmpty else { return snapshot }
         
@@ -100,7 +101,6 @@ class HomeCollectionViewDataSource {
         snapshot.appendItems(items, toSection: dataTransfer.section)
         
         return snapshot
-//        dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     private func updateAllSection(_ dataTransfer: DataTransfer<PersonBankAccount>) -> DiffableSnapshot {
@@ -147,15 +147,31 @@ class HomeCollectionViewDataSource {
         }
     }
     
-    func getAccount(at indexPath: IndexPath) -> PersonBankAccount? {
+    public func getAccount(at indexPath: IndexPath) -> PersonBankAccount? {
         guard let homeItem = dataSource.itemIdentifier(for: indexPath) else {
             return nil
         }
 
-        guard case let .personBankAccount(account) = homeItem else {
-            return nil
+        switch homeItem {
+        case .favoriteBankAccount(let account),
+                .personBankAccount(let account):
+            return account
+            
+        default: return nil
         }
-
-        return account
+    }
+    
+    public func updateAccount(account: PersonBankAccount) {
+        var snapshot: DiffableSnapshot
+        
+        if account.isFavorite {
+            snapshot = updateFavoriteSection(.init(list: [account],
+                                            mode: .append,
+                                            section: .favoriteBankAcconts))
+        } else {
+            snapshot = dataSource.snapshot()
+        }
+        
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
 }

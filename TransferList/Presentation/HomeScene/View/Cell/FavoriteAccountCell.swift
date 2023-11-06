@@ -18,10 +18,10 @@ class FavoriteAccountCell: AccountCell {
         addSubview(stackView)
 
         NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
-            stackView.trailingAnchor.constraint(equalTo: trailingSafeMargin, constant: -12),
+            stackView.leadingAnchor.constraint(equalTo: leadingSafeMargin),
+            stackView.trailingAnchor.constraint(equalTo: trailingSafeMargin),
             stackView.bottomAnchor.constraint(equalTo: bottomSafeMargin),
-            stackView.topAnchor.constraint(equalTo: topSafeMargin),
+            stackView.topAnchor.constraint(equalTo: topSafeMargin)
         ])
         
         configureStackView()
@@ -44,6 +44,8 @@ class FavoriteAccountCell: AccountCell {
     
     private func configureLabels() {
         nameLabel.textAlignment = .center
+        nameLabel.numberOfLines = 1
         cardTypeLabel.textAlignment = .center
+        cardTypeLabel.numberOfLines = 1
     }
 }

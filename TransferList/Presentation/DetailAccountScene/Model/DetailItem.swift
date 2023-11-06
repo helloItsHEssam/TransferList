@@ -18,6 +18,7 @@ enum DetailItem: Hashable {
 
     case header(title: String)
     case information(title: String, value: Int)
+    case addRemoveFavorite(isFavorite: Bool)
 
     func hash(into hasher: inout Hasher) {
         switch self {
@@ -25,6 +26,9 @@ enum DetailItem: Hashable {
         case .information(let title, let value):
             hasher.combine(title)
             hasher.combine(value)
+        case .addRemoveFavorite(let isFavorite):
+            hasher.combine(isFavorite)
+            hasher.combine("addRmoveFavorite")
         }
     }
 

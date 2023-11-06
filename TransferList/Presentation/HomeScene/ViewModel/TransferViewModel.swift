@@ -14,6 +14,7 @@ class TransferViewModel {
     @Published var viewState: ViewState!
     @Published var dataUpdated: DataTransfer<PersonBankAccount>!
     @Published var changeView: Router!
+    var favoriteStatusUpdated = PassthroughSubject<PersonBankAccount, Never>()
     private let useCase: PersonBankAccountUseCase
     private var subscriptions = Set<AnyCancellable>()
     private var paginationMode = PaginationMode()
@@ -52,11 +53,14 @@ class TransferViewModel {
     }
     
     public func fetchFavoriteList() {
-        useCase.fetchPersonAccounts(withOffest: paginationMode.nextOffset)
+        useCase.fetchFavoritePersonAccounts()
             .replaceError(with: [])
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] accounts in
                 guard let self else { return }
+                self.dataFromLocal = .init(list: accounts,
+                                           mode: .initial,
+                                           section: .favoriteBankAcconts)
                 self.dataUpdated = self.dataFromLocal
             })
             .store(in: &subscriptions)
@@ -108,5 +112,41 @@ class TransferViewModel {
     
     public func accountSelected(_ account: PersonBankAccount) {
         changeView = .detail(account: account)
+    }
+    
+    public func removeFromFavorite(account: PersonBankAccount) {
+        useCase.removePersonAccountFromFavorites(account)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                guard let self else { return }
+                
+                switch completion {
+                case .finished: break
+                case .failure(let error):
+                    self.updateViewState(newState: .error(message: error.localizedDescription))
+                    break
+                }
+                
+            } receiveValue: { [weak self] account in
+                self?.favoriteStatusUpdated.send(account)
+            }.store(in: &subscriptions)
+    }
+    
+    public func saveToFavorite(account: PersonBankAccount) {
+        useCase.savePersonAccountToFavorites(account)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                guard let self else { return }
+                
+                switch completion {
+                case .finished: break
+                case .failure(let error):
+                    self.updateViewState(newState: .error(message: error.localizedDescription))
+                    break
+                }
+                
+            } receiveValue: { [weak self] account in                
+                self?.favoriteStatusUpdated.send(account)
+            }.store(in: &subscriptions)
     }
 }

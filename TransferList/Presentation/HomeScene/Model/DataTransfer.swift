@@ -37,6 +37,16 @@ struct DataTransfer<T> {
         list = items
     }
     
+    mutating func append(item: T) {
+        if mode == .append {
+            listHolder.append(item)
+        } else {
+            listHolder = [item]
+        }
+
+        list = [item]
+    }
+    
     func isLastItem(row: Int) -> Bool {
         return listHolder.count - 1 == row
     }
