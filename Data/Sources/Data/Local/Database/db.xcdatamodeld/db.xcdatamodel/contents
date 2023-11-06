@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22G120" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CardEntity" representedClassName="CardEntity" syncable="YES">
+        <attribute name="cardNumber" optional="YES" attributeType="String"/>
+        <attribute name="cardType" optional="YES" attributeType="String"/>
+        <relationship name="account" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PersonBankAccountEntity" inverseName="card" inverseEntity="PersonBankAccountEntity"/>
+        <fetchIndex name="byPropertyIndex">
+            <fetchIndexElement property="cardNumber" type="Binary" order="ascending"/>
+        </fetchIndex>
+    </entity>
+    <entity name="PersonBankAccountEntity" representedClassName="PersonBankAccountEntity" syncable="YES">
+        <attribute name="dateSaved" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isFavorite" optional="YES" transient="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="lastTransfer" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="moreInfo" optional="YES" attributeType="Transformable" valueTransformerName="CardTransferCountDTOTransformer"/>
+        <attribute name="note" optional="YES" attributeType="String"/>
+        <relationship name="card" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CardEntity" inverseName="account" inverseEntity="CardEntity"/>
+        <relationship name="person" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="PersonEntity" inverseName="account" inverseEntity="PersonEntity"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="note"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="PersonEntity" representedClassName="PersonEntity" syncable="YES">
+        <attribute name="avatar" optional="YES" attributeType="String"/>
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="account" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PersonBankAccountEntity" inverseName="person" inverseEntity="PersonBankAccountEntity"/>
+        <fetchIndex name="byPropertyIndex">
+            <fetchIndexElement property="name" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="name"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+</model>
