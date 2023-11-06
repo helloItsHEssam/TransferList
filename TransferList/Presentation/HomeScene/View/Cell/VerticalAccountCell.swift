@@ -29,13 +29,20 @@ class VerticalAccountCell: AccountCell {
             labelsStackView.topAnchor.constraint(equalTo: topSafeMargin, constant: 16),
             labelsStackView.bottomAnchor.constraint(equalTo: bottomSafeMargin, constant: -16),
             labelsStackView.leadingAnchor.constraint(equalTo: personImageView.trailingAnchor, constant: 12),
-            labelsStackView.trailingAnchor.constraint(equalTo: trailingSafeMargin)
-//            labelsStackView.trailingAnchor.constraint(lessThanOrEqualTo: clock.leadingAnchor, constant: -12),
-//            clock.centerYAnchor.constraint(equalTo: centerYSafeMargin),
-//            clock.trailingAnchor.constraint(equalTo: trailingSafeMargin, constant: -18)
+            labelsStackView.trailingAnchor
+                .constraint(lessThanOrEqualTo: imagesStackView.leadingAnchor,
+                            constant: -12),
+            imagesStackView.trailingAnchor.constraint(equalTo: trailingSafeMargin),
+            imagesStackView.centerYAnchor.constraint(equalTo: centerYSafeMargin),
+            imagesStackView.trailingAnchor.constraint(equalTo: trailingSafeMargin),
+            favoriteImageView.heightAnchor.constraint(equalToConstant: 15),
+            favoriteImageView.widthAnchor.constraint(equalToConstant: 15),
+            arrowImageView.widthAnchor.constraint(equalToConstant: 15),
+            arrowImageView.heightAnchor.constraint(equalToConstant: 15)
         ])
 
         configureLabelsStackView()
+        configureImageStackView()
     }
 
     private func configureLabelsStackView() {
@@ -47,10 +54,30 @@ class VerticalAccountCell: AccountCell {
         labelsStackView.addArrangedSubview(nameLabel)
         labelsStackView.addArrangedSubview(cardTypeLabel)
     }
+    
+    private func configureImageStackView() {
+        imagesStackView.spacing = 12
+        imagesStackView.alignment = .center
+        imagesStackView.axis = .horizontal
+        imagesStackView.distribution = .fill
+
+        imagesStackView.addArrangedSubview(favoriteImageView)
+        imagesStackView.addArrangedSubview(arrowImageView)
+        
+        configureImages()
+    }
+    
+    private func configureImages() {
+        favoriteImageView.image = UIImage(named: "star")
+        
+        arrowImageView.image = UIImage(named: "arrow")
+        arrowImageView.contentMode = .scaleAspectFit
+        arrowImageView.transform = CGAffineTransform(rotationAngle: -(.pi / 2))
+    }
 
     override func setAccountItem(_ personAccount: PersonBankAccount) {
         super.setAccountItem(personAccount)
         
-        // set isFavorite
+        favoriteImageView.isHidden = !personAccount.isFavorite
     }
 }
